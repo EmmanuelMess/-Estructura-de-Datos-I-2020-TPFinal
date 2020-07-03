@@ -4,6 +4,8 @@
 #include <string.h>
 #include <ctype.h>
 #include "tests.h"
+#include "trie/trie.h"
+
 #define DEBUG true
 
 typedef struct {
@@ -141,6 +143,7 @@ int main(int argc, char *argv[]) {
   }
 #endif
 
+  Trie* trie = trie_crear();
   bool sigue = true;
 
   while (sigue) {
@@ -162,8 +165,10 @@ int main(int argc, char *argv[]) {
 
         procesar(metadatos, entrada, alias, enteros, &rango);
 
+        trie_agregar(trie, alias);
+
 #if DEBUG
-        printf("%s ", alias);
+        printf("Parser: %s ", alias);
 
         if (metadatos.esExtension) {
           for (int i = 0; i < metadatos.largo; ++i) {
@@ -174,6 +179,9 @@ int main(int argc, char *argv[]) {
         }
 
         printf("\n");
+
+        printf("Trie: %s: %s\n", alias, trie_chequear(trie, alias)? "encotrado":"error");
+
 #endif
       }
 
@@ -181,4 +189,5 @@ int main(int argc, char *argv[]) {
     }
   }
 
+  trie_destruir(trie);
 }

@@ -3,4 +3,4 @@ project(Estructura_de_Datos_I_2020_TpFinal C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(Estructura_de_Datos_I_2020_TpFinal main.c tests.c tests.h main.h avl/arbol_avl.c avl/arbol_avl.h avl/deque.c avl/deque.h)
+add_executable(Estructura_de_Datos_I_2020_TpFinal main.c tests.c tests.h main.h avl/arbol_avl.c avl/arbol_avl.h avl/deque.c avl/deque.h trie/trie.c trie/trie.h trie/map.c trie/map.h)
