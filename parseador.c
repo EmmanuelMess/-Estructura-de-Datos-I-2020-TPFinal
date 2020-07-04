@@ -47,7 +47,11 @@ bool es_numero(char* entrada) {
   return false;
 }
 
-Metadatos chequeador(char * entrada) {
+/**
+ * Verifica que una asignacion sin espacios este bien formulada
+ * Ej "a={}", "a={5,6}", "a={x:80<=x<=30}"
+ */
+Metadatos chequeador_asignacion(char * entrada) {
   Metadatos metadatos = { 0 };
 
   while (isalnum(*entrada)) {
@@ -116,4 +120,19 @@ Metadatos chequeador(char * entrada) {
   if(*entrada != '\0') return METADATOS_ERROR;
 
   return metadatos;
+}
+
+Metadatos chequeador(char * entrada) {
+  const char* orden = "salir";
+  if(strncmp(orden, entrada, strlen(orden)) == 0) {
+    if (strlen(entrada) != strlen(orden)) {
+      return METADATOS_ERROR;
+    }
+
+    Metadatos metadatos = { 0 };
+    metadatos.salir = true;
+    return metadatos;
+  }
+
+  return chequeador_asignacion(entrada);
 }

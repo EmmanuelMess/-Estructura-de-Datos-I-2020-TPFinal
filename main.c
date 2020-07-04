@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   }
 #endif
 
-  Trie* trie = trie_crear();
+  Trie *trie = trie_crear();
   bool sigue = true;
 
   while (sigue) {
@@ -32,6 +32,8 @@ int main(int argc, char *argv[]) {
       if (metadatos.error == 1) {
         printf("Error!\n");
         sigue = true;
+      } else if (metadatos.salir) {
+        sigue = false;
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         int *enteros = malloc(metadatos.largo * sizeof(int));
@@ -54,12 +56,13 @@ int main(int argc, char *argv[]) {
 
         printf("\n");
 
-        printf("Trie: %s: %s\n", alias, trie_chequear(trie, alias)? "encotrado":"error");
+        printf("Trie: %s: %s\n", alias,
+               trie_chequear(trie, alias) ? "encotrado" : "error");
 #endif
       }
-
-      free(entrada);
     }
+
+    free(entrada);
   }
 
   trie_destruir(trie);

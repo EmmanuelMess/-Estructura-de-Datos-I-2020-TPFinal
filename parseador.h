@@ -8,6 +8,7 @@ typedef struct {
   int largoAlias;
   bool esExtension;
   int largo;
+  bool salir;
 } Metadatos;
 
 void remover_espacios(char* entrada);
