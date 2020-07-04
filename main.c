@@ -58,6 +58,7 @@ int main(int argc, char *argv[]) {
         trie_agregar(trie, alias, arbol);
 
 #if DEBUG
+        printf("DEBUG INFO\n");
         printf("Parser: %s ", alias);
 
         if (metadatos.esExtension) {
