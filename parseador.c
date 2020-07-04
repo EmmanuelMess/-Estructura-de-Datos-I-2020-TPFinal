@@ -4,9 +4,10 @@
 #include <ctype.h>
 #include "parseador.h"
 
-const Metadatos METADATOS_ERROR = {.error = 1};
+const Metadatos METADATOS_ERROR = {.error = METADATOS_ERROR_NUM};
+const Metadatos METADATOS_ERROR_ARG_IMPRIMIR = {.error = METADATOS_ERROR_ARG_IMPRIMIR_NUM};
 
-bool procesar(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
+bool procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
   strncpy(alias, entrada, metadatos.largoAlias);
   entrada += metadatos.largoAlias;
 
@@ -122,15 +123,30 @@ Metadatos chequeador_asignacion(char * entrada) {
   return metadatos;
 }
 
+/**
+ * Crea infomacion que necesita la funcion procesar_asignacion.
+ * Entrada no puede tener espacios o caracteres vacios
+ */
 Metadatos chequeador(char * entrada) {
-  const char* orden = "salir";
-  if(strncmp(orden, entrada, strlen(orden)) == 0) {
-    if (strlen(entrada) != strlen(orden)) {
+  const char* ordenSalir = "salir";
+  if(strncmp(ordenSalir, entrada, strlen(ordenSalir)) == 0) {
+    if (strlen(entrada) != strlen(ordenSalir)) {
       return METADATOS_ERROR;
     }
 
     Metadatos metadatos = { 0 };
     metadatos.salir = true;
+    return metadatos;
+  }
+
+  const char* ordenImprimir = "imprimir";
+  if(strncmp(ordenImprimir, entrada, strlen(ordenImprimir)) == 0) {
+    if (strlen(entrada) == strlen(ordenImprimir)) {
+      return METADATOS_ERROR_ARG_IMPRIMIR;
+    }
+
+    Metadatos metadatos = { 0 };
+    metadatos.imprimir = true;
     return metadatos;
   }
 

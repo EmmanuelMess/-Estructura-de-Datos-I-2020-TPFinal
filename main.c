@@ -29,17 +29,28 @@ int main(int argc, char *argv[]) {
 
       Metadatos metadatos = chequeador(entrada);
 
-      if (metadatos.error == 1) {
-        printf("Error!\n");
-        sigue = true;
+      if (metadatos.error) {
+        switch (metadatos.error) {
+          case METADATOS_ERROR_NUM:
+            printf("Error de parseo!\n");
+            sigue = true;
+            break;
+          case METADATOS_ERROR_ARG_IMPRIMIR_NUM:
+            printf("Uso: imprimir <alias>!\n");
+            sigue = true;
+            break;
+        }
+
       } else if (metadatos.salir) {
         sigue = false;
+      } else if(metadatos.imprimir) {
+        //TODO trie get
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         int *enteros = malloc(metadatos.largo * sizeof(int));
         Rango rango;
 
-        procesar(metadatos, entrada, alias, enteros, &rango);
+        procesar_asignacion(metadatos, entrada, alias, enteros, &rango);
 
         trie_agregar(trie, alias);
 
