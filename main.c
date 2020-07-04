@@ -44,35 +44,52 @@ int main(int argc, char *argv[]) {
       } else if (metadatos.salir) {
         sigue = false;
       } else if(metadatos.imprimir) {
-        //TODO trie get
+        char* alias = entrada + strlen("imprimir");
+        ArbolAvl * arbol = trie_obtener(trie, alias);
+        itree_imprimir_arbol(arbol);
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
-        int *enteros = malloc(metadatos.largo * sizeof(int));
-        Rango rango = RANGO_INEXISTENTE;
+        ArbolAvl *arbol = itree_crear();
 
-        procesar_asignacion(metadatos, entrada, alias, enteros, &rango);
+        if(metadatos.esExtension) {
+          int *enteros = malloc(metadatos.largo * sizeof(int));
 
-        ArbolAvl * arbol = itree_crear();
-        itree_insertar(arbol, rango);
+          procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
+
+          for (int i = 0; i < metadatos.largo; ++i) {
+            itree_insertar(arbol, (Rango) {.a = enteros[i], .b = enteros[i]});
+          }
+
+#if DEBUG
+          printf("DEBUG INFO\n");
+          printf("Parser: %s ", alias);
+
+          for (int i = 0; i < metadatos.largo; ++i) {
+            printf("%d ", enteros[i]);
+          }
+#endif
+        } else {
+          Rango rango;
+
+          procesar_asignacion(metadatos, entrada, alias, NULL, &rango);
+
+          itree_insertar(arbol, rango);
+
+#if DEBUG
+          printf("DEBUG INFO\n");
+          printf("Parser: %s ", alias);
+
+          printf("%d:%d", rango.a, rango.b);
+#endif
+        }
 
         trie_agregar(trie, alias, arbol);
 
 #if DEBUG
-        printf("DEBUG INFO\n");
-        printf("Parser: %s ", alias);
-
-        if (metadatos.esExtension) {
-          for (int i = 0; i < metadatos.largo; ++i) {
-            printf("%d ", enteros[i]);
-          }
-        } else {
-          printf("%d:%d", rango.a, rango.b);
-        }
-
         printf("\n");
 
         printf("Trie: %s: %s\n", alias,
-               trie_chequear(trie, alias) ? "encotrado" : "error");
+               trie_obtener(trie, alias) != NULL ? "encotrado" : "error");
 #endif
       }
     }

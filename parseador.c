@@ -7,7 +7,7 @@
 const Metadatos METADATOS_ERROR = {.error = METADATOS_ERROR_NUM};
 const Metadatos METADATOS_ERROR_ARG_IMPRIMIR = {.error = METADATOS_ERROR_ARG_IMPRIMIR_NUM};
 
-bool procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
+void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
   strncpy(alias, entrada, metadatos.largoAlias);
   entrada += metadatos.largoAlias;
 
@@ -28,8 +28,6 @@ bool procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* e
     entrada += strlen("<=x<=");
     rango->b = strtol(entrada, &entrada, 10);
   }
-
-  return true;
 }
 
 void remover_espacios(char* entrada) {

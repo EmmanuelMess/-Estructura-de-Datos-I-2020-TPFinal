@@ -29,6 +29,6 @@ typedef struct {
 
 void remover_espacios(char* entrada);
 Metadatos chequeador(char * entrada);
-bool procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango);
+void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H

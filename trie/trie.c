@@ -62,11 +62,11 @@ void trie_agregar(Trie *trie, char *palabra, ArbolAvl *conjunto) {
       hijo = trie_hijo(trie, palabra[0]);
     }
 
-    trie_agregar(hijo, palabra + 1, NULL);
+    trie_agregar(hijo, palabra + 1, conjunto);
   }
 }
 
-ArbolAvl * trie_chequear(Trie* trie, char *palabra) {
+ArbolAvl * trie_obtener(Trie* trie, char *palabra) {
   if(es_terminador(palabra[0])) {
     if(trie->esFinal) return trie->conjunto;
     else return NULL;
@@ -74,6 +74,6 @@ ArbolAvl * trie_chequear(Trie* trie, char *palabra) {
     Trie *next = trie_hijo(trie, palabra[0]);
 
     if(next == NULL) return false;
-    else return trie_chequear(next, palabra + 1);
+    else return trie_obtener(next, palabra + 1);
   }
 }
