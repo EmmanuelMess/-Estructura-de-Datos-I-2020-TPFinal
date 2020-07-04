@@ -3,19 +3,34 @@ CFLAGS = -g -Wall -Wpedantic
 
 .PHONY: default_target all clean
 
-default_target: ArbolAvl
+default_target: Interprete
 all: default_target
 
-OBJECTS_ARBOLAVL = $(patsubst %.c, compilados/.obj/%.o, $(wildcard *.c))
-HEADERS_ARBOLAVL = $(wildcard *.h)
+OBJECTS_ORDENADOR = $(patsubst %.c, compilados/.obj/%.o, $(wildcard avl/*.c))
+HEADERS_ORDENADOR = $(wildcard avl/*.h)
 
-compilados/.obj/%.o: %.c $(HEADERS_ARBOLAVL)
+OBJECTS_SELECTOR = $(patsubst %.c, compilados/.obj/%.o, $(wildcard trie/*.c))
+HEADERS_SELECTOR = $(wildcard trie/*.h)
+
+OBJECTS_INTERPRETE = $(patsubst %.c, compilados/.obj/%.o, $(wildcard *.c))
+HEADERS_INTERPRETE = $(wildcard *.h)
+
+compilados/.obj/%.o: %.c $(HEADERS_ORDENADOR) $(HEADERS_SELECTOR) $(HEADERS_INTERPRETE)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-.PRECIOUS: ArbolAvl $(OBJECTS_ARBOLAVL)
+.PRECIOUS: Interprete $(OBJECTS_ORDENADOR) $(OBJECTS_SELECTOR) $(OBJECTS_INTERPRETE)
 
-ArbolAvl: compilados/.obj $(OBJECTS_ARBOLAVL)
-	$(CC) $(OBJECTS_ARBOLAVL) $(CFLAGS) -o compilados/$@
+Interprete: compilados compilados/.obj compilados/.obj/avl compilados/.obj/trie $(OBJECTS_ORDENADOR) $(OBJECTS_SELECTOR) $(OBJECTS_INTERPRETE)
+	$(CC) $(OBJECTS_ORDENADOR) $(OBJECTS_SELECTOR) $(OBJECTS_INTERPRETE) $(CFLAGS) -o compilados/$@
+
+compilados:
+	mkdir -p $@
+
+compilados/.obj/avl:
+	mkdir -p $@
+
+compilados/.obj/trie:
+	mkdir -p $@
 
 compilados/.obj:
 	mkdir -p $@
