@@ -55,6 +55,12 @@ void remover_espacios(char* entrada) {
   entrada[j] = '\0';
 }
 
+bool es_numero(char* entrada) {
+  if(isdigit(*entrada)) return true;
+  if(*entrada == '-' && isdigit(*(entrada+1))) return true;
+  return false;
+}
+
 Metadatos chequeador(char * entrada) {
   Metadatos metadatos = { 0 };
 
@@ -71,7 +77,7 @@ Metadatos chequeador(char * entrada) {
 
   entrada++;
 
-  if(*entrada == '}' || isdigit(*entrada)) {
+  if(*entrada == '}' || es_numero(entrada)) {
     metadatos.esExtension = true;
   } else if(*entrada == 'x') {
     metadatos.esExtension = false;
@@ -89,8 +95,8 @@ Metadatos chequeador(char * entrada) {
       return metadatos;
     }
 
-    while (isdigit(*entrada)) {
-      while (isdigit(*entrada)) entrada++;
+    while (es_numero(entrada) || *entrada == '-') {
+      while (es_numero(entrada)) entrada++;
 
       if (*entrada != ',' && *entrada != '}') return ERROR;
       else entrada++;
@@ -108,14 +114,14 @@ Metadatos chequeador(char * entrada) {
   if(*entrada != ':') return ERROR;
   else entrada++;
 
-  while (isdigit(*entrada)) entrada++;
+  while (es_numero(entrada)) entrada++;
 
   int len = strlen("<=x<=");
 
   if(strncmp(entrada, "<=x<=", len) != 0) return ERROR;
   else entrada += len;
 
-  while (isdigit(*entrada)) entrada++;
+  while (es_numero(entrada)) entrada++;
 
   if(*entrada != '}') return ERROR;
 
