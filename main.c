@@ -48,11 +48,14 @@ int main(int argc, char *argv[]) {
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         int *enteros = malloc(metadatos.largo * sizeof(int));
-        Rango rango;
+        Rango rango = RANGO_INEXISTENTE;
 
         procesar_asignacion(metadatos, entrada, alias, enteros, &rango);
 
-        trie_agregar(trie, alias);
+        ArbolAvl * arbol = itree_crear();
+        itree_insertar(arbol, rango);
+
+        trie_agregar(trie, alias, arbol);
 
 #if DEBUG
         printf("Parser: %s ", alias);

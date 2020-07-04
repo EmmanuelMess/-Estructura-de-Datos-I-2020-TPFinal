@@ -1,6 +1,6 @@
 #include <malloc.h>
 #include <stdbool.h>
-#include "map.h"
+#include "mapa.h"
 
 Mapa* mapa_crear() {
   return calloc(1, sizeof(Mapa));
@@ -8,7 +8,9 @@ Mapa* mapa_crear() {
 
 void mapa_destruir(Mapa* mapa) {
   for (int i = 0; i < CANTIDAD_LETRAS; ++i) {
-    trie_destruir(mapa->elementos[i]);
+    if(mapa->elementos[i] != NULL) {
+      trie_destruir(mapa->elementos[i]);
+    }
   }
   free(mapa);
 }

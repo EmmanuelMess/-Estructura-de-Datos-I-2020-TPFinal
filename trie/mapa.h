@@ -1,5 +1,5 @@
-#ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAP_H
-#define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAP_H
+#ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAPA_H
+#define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAPA_H
 
 #include <stdint.h>
 #include <stdbool.h>
@@ -18,4 +18,4 @@ void mapa_insertar(Mapa *mapa, int key, struct _Trie *value);
 struct _Trie* mapa_obtener(Mapa *mapa, int pos);
 bool mapa_contiene(Mapa *mapa, int key);
 
-#endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAP_H
+#endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAPA_H
