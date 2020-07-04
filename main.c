@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
             printf("%d ", enteros[i]);
           }
         } else {
-          printf("%d:%d", rango.inicio, rango.final);
+          printf("%d:%d", rango.a, rango.b);
         }
 
         printf("\n");

@@ -4,6 +4,8 @@
 #include <ctype.h>
 #include "parseador.h"
 
+const Metadatos METADATOS_ERROR = {.error = 1};
+
 bool procesar(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
   strncpy(alias, entrada, metadatos.largoAlias);
   entrada += metadatos.largoAlias;
@@ -21,9 +23,9 @@ bool procesar(Metadatos metadatos, char* entrada, char* alias, int* enteros, Ran
     }
   } else {
     entrada += strlen("{x:");
-    rango->inicio = strtol(entrada, &entrada, 10);
+    rango->a = strtol(entrada, &entrada, 10);
     entrada += strlen("<=x<=");
-    rango->final = strtol(entrada, &entrada, 10);
+    rango->b = strtol(entrada, &entrada, 10);
   }
 
   return true;
@@ -53,11 +55,11 @@ Metadatos chequeador(char * entrada) {
     entrada++;
   }
 
-  if(*entrada != '=') return ERROR;
+  if(*entrada != '=') return METADATOS_ERROR;
 
   entrada++;
 
-  if(*entrada != '{') return ERROR;
+  if(*entrada != '{') return METADATOS_ERROR;
 
   entrada++;
 
@@ -73,7 +75,7 @@ Metadatos chequeador(char * entrada) {
   if(metadatos.esExtension) {
     if (*entrada == '}') {
       entrada++;
-      if(*entrada != '\0') return ERROR;
+      if(*entrada != '\0') return METADATOS_ERROR;
 
       metadatos.largo = 0;
       return metadatos;
@@ -82,36 +84,36 @@ Metadatos chequeador(char * entrada) {
     while (es_numero(entrada) || *entrada == '-') {
       while (es_numero(entrada)) entrada++;
 
-      if (*entrada != ',' && *entrada != '}') return ERROR;
+      if (*entrada != ',' && *entrada != '}') return METADATOS_ERROR;
       else entrada++;
 
       metadatos.largo++;
     }
 
-    if(*entrada != '\0') return ERROR;
+    if(*entrada != '\0') return METADATOS_ERROR;
 
     return metadatos;
   }
 
   entrada++;
 
-  if(*entrada != ':') return ERROR;
+  if(*entrada != ':') return METADATOS_ERROR;
   else entrada++;
 
   while (es_numero(entrada)) entrada++;
 
   int len = strlen("<=x<=");
 
-  if(strncmp(entrada, "<=x<=", len) != 0) return ERROR;
+  if(strncmp(entrada, "<=x<=", len) != 0) return METADATOS_ERROR;
   else entrada += len;
 
   while (es_numero(entrada)) entrada++;
 
-  if(*entrada != '}') return ERROR;
+  if(*entrada != '}') return METADATOS_ERROR;
 
   entrada++;
 
-  if(*entrada != '\0') return ERROR;
+  if(*entrada != '\0') return METADATOS_ERROR;
 
   return metadatos;
 }

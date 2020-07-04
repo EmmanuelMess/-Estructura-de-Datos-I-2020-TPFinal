@@ -1,10 +1,7 @@
 #ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H
 #define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H
 
-typedef struct {
-  int inicio;
-  int final;
-} Rango;
+#include "avl/arbol_avl.h"
 
 typedef struct {
   int error;
@@ -12,8 +9,6 @@ typedef struct {
   bool esExtension;
   int largo;
 } Metadatos;
-
-const Metadatos ERROR = {.error = 1};
 
 void remover_espacios(char* entrada);
 Metadatos chequeador(char * entrada);

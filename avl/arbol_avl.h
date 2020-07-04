@@ -4,16 +4,16 @@
 #include <limits.h>
 #include <stdbool.h>
 
-struct Rango {
+typedef struct {
   int a, b;
-};
+} Rango;
 
-#define RANGO_INEXISTENTE ((struct Rango) {.a = INT_MAX, .b = INT_MIN});
+#define RANGO_INEXISTENTE ((Rango) {.a = INT_MAX, .b = INT_MIN});
 
-bool inexistente(struct Rango rango);
+bool inexistente(Rango rango);
 
 typedef struct _ArbolAvlNode {
-  struct Rango rango;
+  Rango rango;
   int maxB;
   int alto;
 
@@ -33,11 +33,11 @@ ArbolAvl* itree_crear();
 
 void itree_destruir(ArbolAvl* tree);
 
-bool itree_insertar(ArbolAvl *arbol, struct Rango rango);
+bool itree_insertar(ArbolAvl *arbol, Rango rango);
 
-bool itree_eliminar(ArbolAvl* arbol, struct Rango rango);
+bool itree_eliminar(ArbolAvl* arbol, Rango rango);
 
-struct Rango itree_intersectar(ArbolAvl* tree, struct Rango rango);
+Rango itree_intersectar(ArbolAvl* tree, Rango rango);
 
 void itree_recorrer_dfs(ArbolAvl *arbol, Impresion impresion);
 

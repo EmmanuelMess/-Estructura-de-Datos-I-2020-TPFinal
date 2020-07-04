@@ -3,7 +3,7 @@
 #include "arbol_avl.h"
 #include "deque.h"
 
-bool inexistente(struct Rango rango) {
+bool inexistente(Rango rango) {
   return rango.a > rango.b;
 }
 
@@ -149,7 +149,7 @@ void rebalancear(
   }
 }
 
-bool itree_insertar(ArbolAvl *arbol, struct Rango rango) {
+bool itree_insertar(ArbolAvl *arbol, Rango rango) {
   ArbolAvlNode* nodo = calloc(1, sizeof(ArbolAvlNode));
   nodo->rango = rango;
   nodo->maxB = rango.b;
@@ -189,7 +189,7 @@ bool itree_insertar(ArbolAvl *arbol, struct Rango rango) {
   return true;
 }
 
-bool itree_eliminar(ArbolAvl *arbol, struct Rango rango) {
+bool itree_eliminar(ArbolAvl *arbol, Rango rango) {
   if(arbol->arbolAvlNode == NULL) {
     return false;
   }
@@ -277,11 +277,11 @@ bool itree_eliminar(ArbolAvl *arbol, struct Rango rango) {
   return true;
 }
 
-bool existeInterseccion(struct Rango uno, struct Rango dos) {
+bool existeInterseccion(Rango uno, Rango dos) {
   return (uno.b >= dos.a && dos.b >= uno.a);
 }
 
-struct Rango itree_intersectar(ArbolAvl *tree, struct Rango rango) {
+Rango itree_intersectar(ArbolAvl *tree, Rango rango) {
   ArbolAvlNode* nodo = tree->arbolAvlNode;
 
   while (nodo != NULL) {
