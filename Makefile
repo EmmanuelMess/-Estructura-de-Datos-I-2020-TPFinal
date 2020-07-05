@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -g -Wall -Wpedantic
+CFLAGS = -g -Wall -Wpedantic -O3
 
 .PHONY: default_target all clean
 
