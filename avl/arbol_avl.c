@@ -150,6 +150,12 @@ void rebalancear(
 }
 
 bool itree_insertar(ArbolAvl *arbol, Rango rango) {
+  if(inexistente(rango)) {
+    return false;
+  }
+
+  //TODO optimizar arbol
+
   ArbolAvlNode* nodo = calloc(1, sizeof(ArbolAvlNode));
   nodo->rango = rango;
   nodo->maxB = rango.b;
