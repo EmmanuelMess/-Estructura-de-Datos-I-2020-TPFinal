@@ -8,6 +8,10 @@
 
 #define DEBUG true
 
+char* max_puntero(char* a, char* b) {
+  return a > b? a: b;
+}
+
 int main(int argc, char *argv[]) {
 #if DEBUG
   if (argc == 2) {
@@ -30,28 +34,33 @@ int main(int argc, char *argv[]) {
       Metadatos metadatos = chequeador(entrada);
 
       if (metadatos.error) {
-        switch (metadatos.error) {
-          case METADATOS_ERROR_NUM:
-            printf("Error de parseo!\n");
-            sigue = true;
-            break;
-          case METADATOS_ERROR_ARG_IMPRIMIR_NUM:
-            printf("Uso: imprimir <alias>!\n");
-            sigue = true;
-            break;
+        printf("Error de parseo: %.5s\n",
+               max_puntero(entrada, metadatos.posError - 2));
+
+        if (metadatos.error == METADATOS_ERROR_ARG_IMPRIMIR_NUM) {
+          printf("Uso: imprimir <alias>!\n");
         }
 
+        sigue = true;
       } else if (metadatos.salir) {
         sigue = false;
-      } else if(metadatos.imprimir) {
-        char* alias = entrada + strlen("imprimir");
-        ArbolAvl * arbol = trie_obtener(trie, alias);
+      } else if (metadatos.imprimir) {
+        char *alias = entrada + strlen("imprimir");
+        ArbolAvl *arbol = trie_obtener(trie, alias);
         itree_imprimir_arbol(arbol);
+      } else if (metadatos.union_) {
+
+      } else if (metadatos.interseccion) {
+
+      } else if (metadatos.resta) {
+
+      } else if (metadatos.complemento) {
+
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         ArbolAvl *arbol = itree_crear();
 
-        if(metadatos.esExtension) {
+        if (metadatos.esExtension) {
           int *enteros = malloc(metadatos.largo * sizeof(int));
 
           procesar_asignacion(metadatos, entrada, alias, enteros, NULL);

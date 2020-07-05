@@ -4,8 +4,8 @@
 #include <ctype.h>
 #include "parseador.h"
 
-const Metadatos METADATOS_ERROR = {.error = METADATOS_ERROR_NUM};
-const Metadatos METADATOS_ERROR_ARG_IMPRIMIR = {.error = METADATOS_ERROR_ARG_IMPRIMIR_NUM};
+#define METADATOS_ERROR_GENERAL(pos) METADATOS_ERROR(METADATOS_ERROR_NUM, pos)
+#define METADATOS_ERROR_ARG_IMPRIMIR(pos) METADATOS_ERROR(METADATOS_ERROR_ARG_IMPRIMIR_NUM, pos)
 
 void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
   strncpy(alias, entrada, metadatos.largoAlias);
@@ -47,38 +47,25 @@ bool es_numero(char* entrada) {
 }
 
 /**
- * Verifica que una asignacion sin espacios este bien formulada
- * Ej "a={}", "a={5,6}", "a={x:80<=x<=30}"
+ * Verifica que un conjunto sin espacios este bien formulado
+ * Ej "{}", "{5,6}", "{x:80<=x<=30}"
  */
-Metadatos chequeador_asignacion(char * entrada) {
-  Metadatos metadatos = { 0 };
-
-  while (isalnum(*entrada)) {
-    metadatos.largoAlias++;
-    entrada++;
-  }
-
-  if(*entrada != '=') return METADATOS_ERROR;
+Metadatos chequear_conjunto_expicito(Metadatos metadatos, char * entrada) {
+  if(*entrada != '{') return METADATOS_ERROR_GENERAL(entrada);
 
   entrada++;
 
-  if(*entrada != '{') return METADATOS_ERROR;
-
-  entrada++;
-
-  if(*entrada == '}' || es_numero(entrada)) {
+  if(*entrada == '}' || es_numero(entrada))
     metadatos.esExtension = true;
-  } else if(*entrada == 'x') {
+  else if(*entrada == 'x')
     metadatos.esExtension = false;
-  } else {
-    metadatos.error = 1;
-    return metadatos;
-  }
+  else return METADATOS_ERROR_GENERAL(entrada);
+
 
   if(metadatos.esExtension) {
     if (*entrada == '}') {
       entrada++;
-      if(*entrada != '\0') return METADATOS_ERROR;
+      if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
 
       metadatos.largo = 0;
       return metadatos;
@@ -87,36 +74,81 @@ Metadatos chequeador_asignacion(char * entrada) {
     while (es_numero(entrada) || *entrada == '-') {
       while (es_numero(entrada)) entrada++;
 
-      if (*entrada != ',' && *entrada != '}') return METADATOS_ERROR;
+      if (*entrada != ',' && *entrada != '}') return METADATOS_ERROR_GENERAL(entrada);
       else entrada++;
 
       metadatos.largo++;
     }
 
-    if(*entrada != '\0') return METADATOS_ERROR;
+    if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
 
     return metadatos;
   }
 
   entrada++;
 
-  if(*entrada != ':') return METADATOS_ERROR;
+  if(*entrada != ':') return METADATOS_ERROR_GENERAL(entrada);
   else entrada++;
 
   while (es_numero(entrada)) entrada++;
 
   int len = strlen("<=x<=");
 
-  if(strncmp(entrada, "<=x<=", len) != 0) return METADATOS_ERROR;
+  if(strncmp(entrada, "<=x<=", len) != 0) return METADATOS_ERROR_GENERAL(entrada);
   else entrada += len;
 
   while (es_numero(entrada)) entrada++;
 
-  if(*entrada != '}') return METADATOS_ERROR;
+  if(*entrada != '}') return METADATOS_ERROR_GENERAL(entrada);
 
   entrada++;
 
-  if(*entrada != '\0') return METADATOS_ERROR;
+  if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
+
+  return metadatos;
+}
+
+Metadatos chequear_operacion(Metadatos metadatos, char * entrada) {
+  if(!isalnum(*entrada)) return METADATOS_ERROR_GENERAL(entrada);
+
+  entrada++;
+
+  if(*entrada == '~') {
+    metadatos.complemento = true;
+  }
+
+  while (isalnum(*entrada)) {
+    metadatos.largoOperando1++;
+    entrada++;
+  }
+
+  if(metadatos.complemento) {
+    if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
+    return metadatos;
+  }
+
+  switch (*entrada) {
+    case '|':
+      metadatos.union_ = true;
+      break;
+    case '&':
+      metadatos.interseccion = true;
+      break;
+    case '-':
+      metadatos.resta = true;
+      break;
+    default:
+      return METADATOS_ERROR_GENERAL(entrada);
+  }
+
+  entrada++;
+
+  while (isalnum(*entrada)) {
+    metadatos.largoOperando1++;
+    entrada++;
+  }
+
+  if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
 
   return metadatos;
 }
@@ -129,7 +161,7 @@ Metadatos chequeador(char * entrada) {
   const char* ordenSalir = "salir";
   if(strncmp(ordenSalir, entrada, strlen(ordenSalir)) == 0) {
     if (strlen(entrada) != strlen(ordenSalir)) {
-      return METADATOS_ERROR;
+      return METADATOS_ERROR_GENERAL(entrada);
     }
 
     Metadatos metadatos = { 0 };
@@ -140,7 +172,7 @@ Metadatos chequeador(char * entrada) {
   const char* ordenImprimir = "imprimir";
   if(strncmp(ordenImprimir, entrada, strlen(ordenImprimir)) == 0) {
     if (strlen(entrada) == strlen(ordenImprimir)) {
-      return METADATOS_ERROR_ARG_IMPRIMIR;
+      return METADATOS_ERROR_ARG_IMPRIMIR(entrada);
     }
 
     Metadatos metadatos = { 0 };
@@ -148,5 +180,18 @@ Metadatos chequeador(char * entrada) {
     return metadatos;
   }
 
-  return chequeador_asignacion(entrada);
+  Metadatos metadatos = { 0 };
+
+  while (isalnum(*entrada)) {
+    metadatos.largoAlias++;
+    entrada++;
+  }
+
+  if(*entrada != '=') return METADATOS_ERROR_GENERAL(entrada);
+
+  entrada++;
+
+  if(*entrada == '{') return chequear_conjunto_expicito(metadatos, entrada);
+  else if(isalnum(*entrada)) return chequear_operacion(metadatos, entrada);
+  else return METADATOS_ERROR_GENERAL(entrada);
 }
