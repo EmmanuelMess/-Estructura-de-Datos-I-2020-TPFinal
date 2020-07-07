@@ -14,26 +14,22 @@ int max(int a, int b) {
   return a > b? a:b;
 }
 
-void itree_recorrer_fs(
-  ArbolAvl *arbol,
-  Accion actuar,
-  Popper pop
-) {
-  if(arbol->arbolAvlNode == NULL) {
+void itree_recorrer_fs(ArbolAvl *arbol,Accion actuar,Popper pop) {
+  if (arbol->arbolAvlNode == NULL) {
     return;
   }
 
-  Deque* deque = deque_crear();
+  Deque *deque = deque_crear();
 
   deque_push_front(deque, arbol->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
-    ArbolAvlNode* nodo = pop(deque);
+    ArbolAvlNode *nodo = pop(deque);
 
-    if(nodo->izquierda) {
+    if (nodo->izquierda) {
       deque_push_front(deque, nodo->izquierda);
     }
-    if(nodo->derecha) {
+    if (nodo->derecha) {
       deque_push_front(deque, nodo->derecha);
     }
 
@@ -77,13 +73,14 @@ ArbolAvl * itree_copiar(ArbolAvl * arbolA) {
   return copia;
 }
 
-ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
-
-}
-
 void itree_destruir(ArbolAvl *tree) {
   itree_recorrer_fs(tree, free, deque_pop_back);
   free(tree);
+}
+
+
+ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+
 }
 
 void actualizar_max_nodo(ArbolAvlNode* nodo) {
@@ -316,7 +313,7 @@ bool itree_eliminar(ArbolAvl *arbol, Rango rango) {
   return true;
 }
 
-bool existeInterseccion(Rango uno, Rango dos) {
+bool existe_interseccion(Rango uno, Rango dos) {
   return (uno.b >= dos.a && dos.b >= uno.a);
 }
 
@@ -324,7 +321,7 @@ Rango itree_intersectar(ArbolAvl *tree, Rango rango) {
   ArbolAvlNode* nodo = tree->arbolAvlNode;
 
   while (nodo != NULL) {
-    if(existeInterseccion(nodo->rango, rango)) {
+    if(existe_interseccion(nodo->rango, rango)) {
       return nodo->rango;
     }
 
@@ -400,22 +397,6 @@ void itree_imprimir_arbol(ArbolAvl *arbol) {
   }
 
   printf("\n");
-}
-
-void itree_recorrer_fs_imprimir(
-  ArbolAvl *arbol,
-  Impresion impresion,
-  Popper pop
-) {
-  itree_recorrer_fs(arbol, impresion, pop);
-}
-
-void itree_recorrer_dfs(ArbolAvl *arbol, Impresion impresion) {
-  itree_recorrer_fs_imprimir(arbol, impresion, deque_pop_front);
-}
-
-void itree_recorrer_bfs(ArbolAvl *arbol, Impresion impresion) {
-  itree_recorrer_fs_imprimir(arbol, impresion, deque_pop_back);
 }
 
 int itree_factor_de_equilibrio(ArbolAvlNode *nodo) {

@@ -27,8 +27,6 @@ typedef struct {
 
 typedef void Accion(ArbolAvlNode*);
 
-typedef void Impresion(ArbolAvlNode*);
-
 ArbolAvl* itree_crear();
 
 ArbolAvl* itree_copia(ArbolAvl* arbol);
@@ -40,10 +38,6 @@ bool itree_insertar(ArbolAvl *arbol, Rango rango);
 bool itree_eliminar(ArbolAvl* arbol, Rango rango);
 
 Rango itree_intersectar(ArbolAvl* tree, Rango rango);
-
-void itree_recorrer_dfs(ArbolAvl *arbol, Impresion impresion);
-
-void itree_recorrer_bfs(ArbolAvl *arbol, Impresion impresion);
 
 void itree_imprimir_arbol(ArbolAvl *arbol);
 
