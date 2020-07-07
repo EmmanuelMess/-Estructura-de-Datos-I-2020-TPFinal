@@ -21,7 +21,7 @@ bool deque_vacio(Deque *deque) {
 void * deque_pop_back(Deque *deque) {
   DequeNode* tmp = deque->ultimoNodo;
 
-  ArbolAvlNode* elemento = deque->ultimoNodo->arbolAvl;
+  ArbolIntervalosNode* elemento = deque->ultimoNodo->arbolAvl;
   deque->ultimoNodo = deque->ultimoNodo->anterior;
 
   if(deque->ultimoNodo != NULL) {
@@ -37,7 +37,7 @@ void * deque_pop_back(Deque *deque) {
 void * deque_pop_front(Deque *deque) {
   DequeNode* tmp = deque->primerNodo;
 
-  ArbolAvlNode* elemento = deque->primerNodo->arbolAvl;
+  ArbolIntervalosNode* elemento = deque->primerNodo->arbolAvl;
   deque->primerNodo = deque->primerNodo->siguente;
 
   if(deque->primerNodo != NULL) {

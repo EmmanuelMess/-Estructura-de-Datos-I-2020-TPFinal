@@ -2,20 +2,20 @@
 #define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_TRIE_H
 #include <stdbool.h>
 #include "mapa.h"
-#include "../avl/arbol_avl.h"
+#include "../avl/arbol_intervalos.h"
 
 typedef struct _Trie {
   struct _Mapa* mapa;
   bool esFinal;
-  ArbolAvl* conjunto;
+  ArbolIntervalos* conjunto;
 } Trie;
 
 Trie* trie_crear();
 
 void trie_destruir(Trie* trie);
 
-void trie_agregar(Trie *trie, char *palabra, ArbolAvl *conjunto);
+void trie_agregar(Trie *trie, char *palabra, ArbolIntervalos *conjunto);
 
-ArbolAvl * trie_obtener(Trie *trie, char *palabra);
+ArbolIntervalos * trie_obtener(Trie *trie, char *palabra);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_TRIE_H

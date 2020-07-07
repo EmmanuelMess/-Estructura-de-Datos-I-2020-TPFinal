@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include "trie.h"
 #include "mapa.h"
-#include "../avl/arbol_avl.h"
+#include "../avl/arbol_intervalos.h"
 
 Trie* trie_crear() {
   Trie* trie = calloc(1, sizeof(Trie));
@@ -11,7 +11,7 @@ Trie* trie_crear() {
 
 void trie_destruir(Trie* trie) {
   if(trie->conjunto != NULL) {
-    itree_destruir(trie->conjunto);
+    arbolintervalos_destruir(trie->conjunto);
   }
   if(trie->mapa != NULL) {
     mapa_destruir(trie->mapa);
@@ -50,7 +50,7 @@ Trie* trie_hijo(Trie* trie, char pos) {
   return mapa_obtener(trie->mapa, reasignar(pos));
 }
 
-void trie_agregar(Trie *trie, char *palabra, ArbolAvl *conjunto) {
+void trie_agregar(Trie *trie, char *palabra, ArbolIntervalos *conjunto) {
   if (es_terminador(palabra[0])) {
     trie->esFinal = true;
     trie->conjunto = conjunto;
@@ -66,7 +66,7 @@ void trie_agregar(Trie *trie, char *palabra, ArbolAvl *conjunto) {
   }
 }
 
-ArbolAvl * trie_obtener(Trie* trie, char *palabra) {
+ArbolIntervalos * trie_obtener(Trie* trie, char *palabra) {
   if(es_terminador(palabra[0])) {
     if(trie->esFinal) return trie->conjunto;
     else return NULL;

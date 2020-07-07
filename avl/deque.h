@@ -2,7 +2,7 @@
 #define ESTRUCTURA_DE_DATOS_I_2020_TP2_DEQUE_H
 
 #include <malloc.h>
-#include "arbol_avl.h"
+#include "arbol_intervalos.h"
 
 //INICIO <-> <-> <-> FINAL
 typedef struct _DequeNode {

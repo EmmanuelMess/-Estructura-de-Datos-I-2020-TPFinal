@@ -1,20 +1,20 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
-#include "arbol_avl.h"
+#include "arbol_intervalos.h"
 #include "deque.h"
 
 bool inexistente(Rango rango) {
   return rango.a > rango.b;
 }
 
-typedef ArbolAvlNode* (Popper(Deque*)) ;
+typedef ArbolIntervalosNode* (Popper(Deque*)) ;
 
 int max(int a, int b) {
   return a > b? a:b;
 }
 
-void itree_recorrer_fs(ArbolAvl *arbol,Accion actuar,Popper pop) {
+void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
   if (arbol->arbolAvlNode == NULL) {
     return;
   }
@@ -24,7 +24,7 @@ void itree_recorrer_fs(ArbolAvl *arbol,Accion actuar,Popper pop) {
   deque_push_front(deque, arbol->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
-    ArbolAvlNode *nodo = pop(deque);
+    ArbolIntervalosNode *nodo = pop(deque);
 
     if (nodo->izquierda) {
       deque_push_front(deque, nodo->izquierda);
@@ -39,24 +39,24 @@ void itree_recorrer_fs(ArbolAvl *arbol,Accion actuar,Popper pop) {
   deque_destruir(deque);
 }
 
-ArbolAvl *itree_crear() {
-  ArbolAvl* avl = calloc(1, sizeof(ArbolAvl));
+ArbolIntervalos *arbolintervalos_crear() {
+  ArbolIntervalos* avl = calloc(1, sizeof(ArbolIntervalos));
 
   return avl;
 }
 
-ArbolAvl * itree_copiar(ArbolAvl * arbolA) {
-  ArbolAvl * copia = itree_crear();
+ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
+  ArbolIntervalos * copia = arbolintervalos_crear();
 
-  if(arbolA->arbolAvlNode == NULL) {
+  if(arbol->arbolAvlNode == NULL) {
     return copia;
   }
 
   Deque* deque = deque_crear();
-  deque_push_front(deque, arbolA->arbolAvlNode);
+  deque_push_front(deque, arbol->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
-    ArbolAvlNode* nodo = deque_pop_front(deque);
+    ArbolIntervalosNode* nodo = deque_pop_front(deque);
 
     if(nodo->izquierda) {
       deque_push_front(deque, nodo->izquierda);
@@ -65,7 +65,7 @@ ArbolAvl * itree_copiar(ArbolAvl * arbolA) {
       deque_push_front(deque, nodo->derecha);
     }
 
-    itree_insertar(copia, nodo->rango);
+    arbolintervalos_insertar(copia, nodo->rango);
   }
 
   deque_destruir(deque);
@@ -73,20 +73,20 @@ ArbolAvl * itree_copiar(ArbolAvl * arbolA) {
   return copia;
 }
 
-void itree_destruir(ArbolAvl *tree) {
+void arbolintervalos_destruir(ArbolIntervalos *tree) {
   itree_recorrer_fs(tree, free, deque_pop_back);
   free(tree);
 }
 
-ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
-  ArbolAvl *base;
-  ArbolAvl *aUnir;
+ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
+  ArbolIntervalos *base;
+  ArbolIntervalos *aUnir;
 
   if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
-    base = itree_copiar(arbolB);
+    base = arbolintervalos_copiar(arbolB);
     aUnir = arbolA;
   } else {
-    base = itree_copiar(arbolA);
+    base = arbolintervalos_copiar(arbolA);
     aUnir = arbolB;
   }
 
@@ -96,12 +96,12 @@ ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
   deque_push_front(deque, aUnir->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
-    ArbolAvlNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNode *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
 
-    itree_insertar(base, nodo->rango);
+    arbolintervalos_insertar(base, nodo->rango);
   }
 
   deque_destruir(deque);
@@ -109,15 +109,15 @@ ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
   return base;
 }
 
-ArbolAvl * itree_interseccion(ArbolAvl * arbolA, ArbolAvl * arbolB) {
-  ArbolAvl *base;
-  ArbolAvl *aIntersecar;
+ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
+  ArbolIntervalos *base;
+  ArbolIntervalos *aIntersecar;
 
   if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
-    base = itree_copiar(arbolB);
+    base = arbolintervalos_copiar(arbolB);
     aIntersecar = arbolA;
   } else {
-    base = itree_copiar(arbolA);
+    base = arbolintervalos_copiar(arbolA);
     aIntersecar = arbolB;
   }
 
@@ -127,12 +127,12 @@ ArbolAvl * itree_interseccion(ArbolAvl * arbolA, ArbolAvl * arbolB) {
   deque_push_front(deque, aIntersecar->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
-    ArbolAvlNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNode *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
 
-    Rango interseccion = itree_intersectar(base, nodo->rango);
+    Rango interseccion = arbolintervalos_intersectar(base, nodo->rango);
 
     if(!inexistente(interseccion)) {
       //TODO
@@ -144,15 +144,15 @@ ArbolAvl * itree_interseccion(ArbolAvl * arbolA, ArbolAvl * arbolB) {
   return base;
 }
 
-ArbolAvl * itree_resta(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
   //TODO
 }
 
-ArbolAvl *itree_complemento(ArbolAvl *arbol) {
+ArbolIntervalos *arbolintervalos_complemento(ArbolIntervalos *arbol) {
   //TODO
 }
 
-void actualizar_max_nodo(ArbolAvlNode* nodo) {
+void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
   if(nodo->izquierda == NULL && nodo->derecha == NULL) {
     nodo->maxB = nodo->rango.b;
   } else if(nodo->izquierda == NULL) {
@@ -166,12 +166,12 @@ void actualizar_max_nodo(ArbolAvlNode* nodo) {
 }
 
 void rotacion_simple_izquierda(
-  ArbolAvlNode** posicionDelNodo,
-  ArbolAvlNode* nodo
+  ArbolIntervalosNode** posicionDelNodo,
+  ArbolIntervalosNode* nodo
 ) {
-  ArbolAvlNode* nuevoHijo = nodo->izquierda;
-  ArbolAvlNode* nuevoNietoDerecha = nodo;
-  ArbolAvlNode* nuevoIzquierdaNietoDerecha = nodo->izquierda->derecha;
+  ArbolIntervalosNode* nuevoHijo = nodo->izquierda;
+  ArbolIntervalosNode* nuevoNietoDerecha = nodo;
+  ArbolIntervalosNode* nuevoIzquierdaNietoDerecha = nodo->izquierda->derecha;
 
   *posicionDelNodo = nuevoHijo;
   nuevoHijo->derecha = nuevoNietoDerecha;
@@ -184,12 +184,12 @@ void rotacion_simple_izquierda(
 }
 
 void rotacion_simple_derecha(
-  ArbolAvlNode** posicionDelNodo,
-  ArbolAvlNode* nodo
+  ArbolIntervalosNode** posicionDelNodo,
+  ArbolIntervalosNode* nodo
 ) {
-  ArbolAvlNode* nuevoHijo = nodo->derecha;
-  ArbolAvlNode* nuevoNietoIzquierda = nodo;
-  ArbolAvlNode* nuevaDerechaNietoIzquierda = nodo->derecha->izquierda;
+  ArbolIntervalosNode* nuevoHijo = nodo->derecha;
+  ArbolIntervalosNode* nuevoNietoIzquierda = nodo;
+  ArbolIntervalosNode* nuevaDerechaNietoIzquierda = nodo->derecha->izquierda;
 
   *posicionDelNodo = nuevoHijo;
   nuevoHijo->izquierda = nuevoNietoIzquierda;
@@ -205,8 +205,8 @@ void rebalancear(
   Deque* dequeDireccion
 ) {
   while (!deque_vacio(dequeDireccion)) {
-    ArbolAvlNode** posicionDelNodo = (ArbolAvlNode**) deque_pop_front(dequeDireccion);
-    ArbolAvlNode* chequear = *posicionDelNodo;
+    ArbolIntervalosNode** posicionDelNodo = (ArbolIntervalosNode**) deque_pop_front(dequeDireccion);
+    ArbolIntervalosNode* chequear = *posicionDelNodo;
 
     actualizar_max_nodo(chequear);
 
@@ -220,22 +220,22 @@ void rebalancear(
       chequear->alto = 1;
     }
 
-    if(-1 <= itree_factor_de_equilibrio(chequear)
-       && itree_factor_de_equilibrio(chequear) <= 1) {
+    if(-1 <= arbolintervalos_factor_de_equilibrio(chequear)
+       && arbolintervalos_factor_de_equilibrio(chequear) <= 1) {
       continue;
     }
 
-    if (itree_factor_de_equilibrio(chequear->izquierda) < 0) {
+    if (arbolintervalos_factor_de_equilibrio(chequear->izquierda) < 0) {
       rotacion_simple_izquierda(posicionDelNodo, chequear);
       break;
-    } else if (itree_factor_de_equilibrio(chequear->derecha) > 0) {
+    } else if (arbolintervalos_factor_de_equilibrio(chequear->derecha) > 0) {
       rotacion_simple_derecha(posicionDelNodo, chequear);
       break;
-    } else if(itree_factor_de_equilibrio(chequear->izquierda) > 0) {
+    } else if(arbolintervalos_factor_de_equilibrio(chequear->izquierda) > 0) {
       rotacion_simple_derecha(&(chequear->izquierda), chequear->izquierda);
       rotacion_simple_izquierda(posicionDelNodo, chequear);
       break;
-    } else if(itree_factor_de_equilibrio(chequear->derecha) < 0) {
+    } else if(arbolintervalos_factor_de_equilibrio(chequear->derecha) < 0) {
       rotacion_simple_izquierda(&(chequear->derecha), chequear->derecha);
       rotacion_simple_derecha(posicionDelNodo, chequear);
       break;
@@ -243,19 +243,19 @@ void rebalancear(
   }
 
   while (!deque_vacio(dequeDireccion)) {
-    ArbolAvlNode** chequear = deque_pop_front(dequeDireccion);
+    ArbolIntervalosNode** chequear = deque_pop_front(dequeDireccion);
     actualizar_max_nodo(*chequear);
   }
 }
 
-bool itree_insertar(ArbolAvl *arbol, Rango rango) {
+bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango)) {
     return false;
   }
 
   //TODO optimizar arbol
 
-  ArbolAvlNode* nodo = calloc(1, sizeof(ArbolAvlNode));
+  ArbolIntervalosNode* nodo = calloc(1, sizeof(ArbolIntervalosNode));
   nodo->rango = rango;
   nodo->maxB = rango.b;
   nodo->alto = 1;
@@ -263,12 +263,12 @@ bool itree_insertar(ArbolAvl *arbol, Rango rango) {
   Deque* dequeDireccion = deque_crear();
 
   {
-    ArbolAvlNode **pos = &(arbol->arbolAvlNode);
+    ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
 
     while (*pos != NULL) {
       deque_push_front(dequeDireccion, pos);
 
-      ArbolAvlNode *chequear = *pos;
+      ArbolIntervalosNode *chequear = *pos;
 
       if (rango.a < chequear->rango.a
           || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
@@ -294,23 +294,23 @@ bool itree_insertar(ArbolAvl *arbol, Rango rango) {
   return true;
 }
 
-bool itree_eliminar(ArbolAvl *arbol, Rango rango) {
+bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   if(arbol->arbolAvlNode == NULL) {
     return false;
   }
 
   Deque *dequeDireccion = deque_crear();
 
-  ArbolAvlNode **posicionDelNodoAEliminar;
-  ArbolAvlNode *nodoAEliminar;
+  ArbolIntervalosNode **posicionDelNodoAEliminar;
+  ArbolIntervalosNode *nodoAEliminar;
 
   {//Rastreo del nodo a eliminar
-    ArbolAvlNode **pos = &(arbol->arbolAvlNode);
+    ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
 
     while (*pos != NULL) {
       deque_push_front(dequeDireccion, pos);
 
-      ArbolAvlNode *chequear = *pos;
+      ArbolIntervalosNode *chequear = *pos;
 
       if (rango.a < chequear->rango.a
           || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
@@ -332,8 +332,8 @@ bool itree_eliminar(ArbolAvl *arbol, Rango rango) {
 
   {//Rastreo del nodo que lo reemplaza
     if (nodoAEliminar->izquierda != NULL && nodoAEliminar->derecha != NULL) {
-      ArbolAvlNode **posicionDelNodoSacado;
-      ArbolAvlNode *nuevoHijo;
+      ArbolIntervalosNode **posicionDelNodoSacado;
+      ArbolIntervalosNode *nuevoHijo;
 
       nuevoHijo = nodoAEliminar->derecha;
       posicionDelNodoSacado = &(nodoAEliminar->derecha);
@@ -386,8 +386,8 @@ bool existe_interseccion(Rango uno, Rango dos) {
   return (uno.b >= dos.a && dos.b >= uno.a);
 }
 
-Rango itree_intersectar(ArbolAvl *tree, Rango rango) {
-  ArbolAvlNode* nodo = tree->arbolAvlNode;
+Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
+  ArbolIntervalosNode* nodo = tree->arbolAvlNode;
 
   while (nodo != NULL) {
     if(existe_interseccion(nodo->rango, rango)) {
@@ -416,7 +416,7 @@ Rango itree_intersectar(ArbolAvl *tree, Rango rango) {
   return RANGO_INEXISTENTE;
 }
 
-void itree_imprimir_arbol(ArbolAvl *arbol) {
+void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
   if(arbol->arbolAvlNode == NULL) {
     printf("Vacio\n");
     return;
@@ -432,7 +432,7 @@ void itree_imprimir_arbol(ArbolAvl *arbol) {
 
   int i = 0;
   for (; nodosEnDeque > 0; i++) {
-    ArbolAvlNode* nodo = deque_pop_back(deque);
+    ArbolIntervalosNode* nodo = deque_pop_back(deque);
 
     if(!nodo) {
       printf(" {    NULL    }");
@@ -468,7 +468,7 @@ void itree_imprimir_arbol(ArbolAvl *arbol) {
   printf("\n");
 }
 
-int itree_factor_de_equilibrio(ArbolAvlNode *nodo) {
+int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo) {
   if(nodo->derecha && nodo->izquierda) {
     return nodo->derecha->alto - nodo->izquierda->alto;
   } else if(nodo->derecha) {

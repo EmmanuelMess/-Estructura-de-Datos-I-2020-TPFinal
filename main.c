@@ -46,35 +46,35 @@ int main(int argc, char *argv[]) {
         sigue = false;
       } else if (metadatos.imprimir) {
         char *alias = entrada + strlen("imprimir");
-        ArbolAvl *arbol = trie_obtener(trie, alias);
-        itree_imprimir_arbol(arbol);
+        ArbolIntervalos *arbol = trie_obtener(trie, alias);
+        arbolintervalos_imprimir_arbol(arbol);
       } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
         char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
         char aliasA[metadatos.largoOperando1 + 1];
         char aliasB[metadatos.largoOperando2 + 1];
         procesar_operacion(metadatos, entrada, alias, aliasA, aliasB);
 
-        ArbolAvl *arbolA = trie_obtener(trie, aliasA);
-        ArbolAvl *arbolB = trie_obtener(trie, aliasB);
+        ArbolIntervalos *arbolA = trie_obtener(trie, aliasA);
+        ArbolIntervalos *arbolB = trie_obtener(trie, aliasB);
 
         if(metadatos.union_) {
-          trie_agregar(trie, alias, itree_union(arbolA, arbolB));
+          trie_agregar(trie, alias, arbolintervalos_union(arbolA, arbolB));
         } else if(metadatos.interseccion) {
-          trie_agregar(trie, alias, itree_interseccion(arbolA, arbolB));
+          trie_agregar(trie, alias, arbolintervalos_interseccion(arbolA, arbolB));
         } else if(metadatos.resta) {
-          trie_agregar(trie, alias, itree_resta(arbolA, arbolB));
+          trie_agregar(trie, alias, arbolintervalos_resta(arbolA, arbolB));
         }
       } else if (metadatos.complemento) {
         char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
         char aliasA[metadatos.largoOperando1];
         procesar_operacion(metadatos, entrada, alias, aliasA, NULL);
 
-        ArbolAvl *arbol = trie_obtener(trie, aliasA);
+        ArbolIntervalos *arbol = trie_obtener(trie, aliasA);
 
-        trie_agregar(trie, alias, itree_complemento(arbol));
+        trie_agregar(trie, alias, arbolintervalos_complemento(arbol));
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
-        ArbolAvl *arbol = itree_crear();
+        ArbolIntervalos *arbol = arbolintervalos_crear();
 
         if (metadatos.esExtension) {
           int *enteros = malloc(metadatos.largo * sizeof(int));
@@ -82,7 +82,8 @@ int main(int argc, char *argv[]) {
           procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
 
           for (int i = 0; i < metadatos.largo; ++i) {
-            itree_insertar(arbol, (Rango) {.a = enteros[i], .b = enteros[i]});
+            arbolintervalos_insertar(arbol,
+                                     (Rango) {.a = enteros[i], .b = enteros[i]});
           }
 
 #if DEBUG
@@ -98,7 +99,7 @@ int main(int argc, char *argv[]) {
 
           procesar_asignacion(metadatos, entrada, alias, NULL, &rango);
 
-          itree_insertar(arbol, rango);
+          arbolintervalos_insertar(arbol, rango);
 
 #if DEBUG
           printf("DEBUG INFO\n");

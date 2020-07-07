@@ -1,7 +1,7 @@
 #ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H
 #define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H
 
-#include "avl/arbol_avl.h"
+#include "avl/arbol_intervalos.h"
 
 typedef struct {
   //error
