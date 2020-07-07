@@ -48,14 +48,18 @@ int main(int argc, char *argv[]) {
         char *alias = entrada + strlen("imprimir");
         ArbolAvl *arbol = trie_obtener(trie, alias);
         itree_imprimir_arbol(arbol);
-      } else if (metadatos.union_) {
+      } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
+        char aliasA[metadatos.largoOperando1];
+        char aliasB[metadatos.largoOperando1];
+        procesar_operacion(metadatos, entrada, aliasA, aliasB);
 
-      } else if (metadatos.interseccion) {
-
-      } else if (metadatos.resta) {
-
+        ArbolAvl *arbolA = trie_obtener(trie, aliasA);
+        ArbolAvl *arbolB = trie_obtener(trie, aliasB);
       } else if (metadatos.complemento) {
+        char aliasA[metadatos.largoOperando1];
+        procesar_operacion(metadatos, entrada, aliasA, NULL);
 
+        ArbolAvl *arbolA = trie_obtener(trie, aliasA);
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         ArbolAvl *arbol = itree_crear();

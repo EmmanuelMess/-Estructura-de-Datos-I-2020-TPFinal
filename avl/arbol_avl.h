@@ -31,6 +31,8 @@ typedef void Impresion(ArbolAvlNode*);
 
 ArbolAvl* itree_crear();
 
+ArbolAvl* itree_copia(ArbolAvl* arbol);
+
 void itree_destruir(ArbolAvl* tree);
 
 bool itree_insertar(ArbolAvl *arbol, Rango rango);

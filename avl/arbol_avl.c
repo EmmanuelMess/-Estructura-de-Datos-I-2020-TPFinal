@@ -1,5 +1,6 @@
 #include <malloc.h>
 #include <stdlib.h>
+#include <string.h>
 #include "arbol_avl.h"
 #include "deque.h"
 
@@ -46,6 +47,38 @@ ArbolAvl *itree_crear() {
   ArbolAvl* avl = calloc(1, sizeof(ArbolAvl));
 
   return avl;
+}
+
+ArbolAvl * itree_copiar(ArbolAvl * arbolA) {
+  ArbolAvl * copia = itree_crear();
+
+  if(arbolA->arbolAvlNode == NULL) {
+    return copia;
+  }
+
+  Deque* deque = deque_crear();
+  deque_push_front(deque, arbolA->arbolAvlNode);
+
+  while (!deque_vacio(deque)) {
+    ArbolAvlNode* nodo = deque_pop_front(deque);
+
+    if(nodo->izquierda) {
+      deque_push_front(deque, nodo->izquierda);
+    }
+    if(nodo->derecha) {
+      deque_push_front(deque, nodo->derecha);
+    }
+
+    itree_insertar(copia, nodo->rango);
+  }
+
+  deque_destruir(deque);
+
+  return copia;
+}
+
+ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+
 }
 
 void itree_destruir(ArbolAvl *tree) {

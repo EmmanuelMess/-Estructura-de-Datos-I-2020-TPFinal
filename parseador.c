@@ -7,29 +7,6 @@
 #define METADATOS_ERROR_GENERAL(pos) METADATOS_ERROR(METADATOS_ERROR_NUM, pos)
 #define METADATOS_ERROR_ARG_IMPRIMIR(pos) METADATOS_ERROR(METADATOS_ERROR_ARG_IMPRIMIR_NUM, pos)
 
-void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
-  strncpy(alias, entrada, metadatos.largoAlias);
-  entrada += metadatos.largoAlias;
-
-  while(*entrada != '{') {
-    entrada++;
-  }
-
-  int indiceEnteros = 0;
-
-  if(metadatos.esExtension) {
-    while (*entrada != '}') {
-      entrada++;
-      enteros[indiceEnteros++] = strtol(entrada, &entrada, 10);
-    }
-  } else {
-    entrada += strlen("{x:");
-    rango->a = strtol(entrada, &entrada, 10);
-    entrada += strlen("<=x<=");
-    rango->b = strtol(entrada, &entrada, 10);
-  }
-}
-
 void remover_espacios(char* entrada) {
   int i = 0;
   int j = 0;
@@ -194,4 +171,43 @@ Metadatos chequeador(char * entrada) {
   if(*entrada == '{') return chequear_conjunto_expicito(metadatos, entrada);
   else if(isalnum(*entrada)) return chequear_operacion(metadatos, entrada);
   else return METADATOS_ERROR_GENERAL(entrada);
+}
+
+void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
+  strncpy(alias, entrada, metadatos.largoAlias);
+  entrada += metadatos.largoAlias;
+
+  while(*entrada != '{') {
+    entrada++;
+  }
+
+  int indiceEnteros = 0;
+
+  if(metadatos.esExtension) {
+    while (*entrada != '}') {
+      entrada++;
+      enteros[indiceEnteros++] = strtol(entrada, &entrada, 10);
+    }
+  } else {
+    entrada += strlen("{x:");
+    rango->a = strtol(entrada, &entrada, 10);
+    entrada += strlen("<=x<=");
+    rango->b = strtol(entrada, &entrada, 10);
+  }
+}
+
+void procesar_operacion(Metadatos metadatos, char *entrada, char *aliasA,
+                        char *aliasB) {
+  if(metadatos.complemento) {
+    char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=~");
+    strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+    return;
+  }
+
+  char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=");
+  strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+
+  char *inicioAliasB = entrada + metadatos.largoAlias + strlen("=")
+                       + metadatos.largoOperando1 + 1; //1 es el largo del operando en chars
+  strncpy(aliasB, inicioAliasB, metadatos.largoOperando1);
 }
