@@ -27,20 +27,30 @@ typedef struct {
 
 typedef void Accion(ArbolAvlNode*);
 
-ArbolAvl* itree_crear();
+// OPERACIONES QUE NO EDITAN LA ENTRADA
+ArbolAvl * itree_crear();
 
-ArbolAvl* itree_copia(ArbolAvl* arbol);
+ArbolAvl * itree_copiar(ArbolAvl* arbol);
+
+ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB);
+
+ArbolAvl * itree_interseccion(ArbolAvl * arbolA, ArbolAvl * arbolB);
+
+ArbolAvl * itree_resta(ArbolAvl * arbolA, ArbolAvl * arbolB);
+
+ArbolAvl * itree_complemento(ArbolAvl * arbol);
 
 void itree_destruir(ArbolAvl* tree);
-
-bool itree_insertar(ArbolAvl *arbol, Rango rango);
-
-bool itree_eliminar(ArbolAvl* arbol, Rango rango);
-
-Rango itree_intersectar(ArbolAvl* tree, Rango rango);
 
 void itree_imprimir_arbol(ArbolAvl *arbol);
 
 int itree_factor_de_equilibrio(ArbolAvlNode *nodo);
+
+Rango itree_intersectar(ArbolAvl* tree, Rango rango);
+
+// OPERACIONES QUE EDITAN LA ENTRADA
+bool itree_insertar(ArbolAvl *arbol, Rango rango);
+
+bool itree_eliminar(ArbolAvl* arbol, Rango rango);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H

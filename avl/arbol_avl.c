@@ -78,9 +78,78 @@ void itree_destruir(ArbolAvl *tree) {
   free(tree);
 }
 
-
 ArbolAvl * itree_union(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+  ArbolAvl *base;
+  ArbolAvl *aUnir;
 
+  if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
+    base = itree_copiar(arbolB);
+    aUnir = arbolA;
+  } else {
+    base = itree_copiar(arbolA);
+    aUnir = arbolB;
+  }
+
+  if (aUnir->arbolAvlNode == NULL) return base;
+
+  Deque *deque = deque_crear();
+  deque_push_front(deque, aUnir->arbolAvlNode);
+
+  while (!deque_vacio(deque)) {
+    ArbolAvlNode *nodo = deque_pop_front(deque);
+
+    if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
+    if (nodo->derecha) deque_push_front(deque, nodo->derecha);
+
+    itree_insertar(base, nodo->rango);
+  }
+
+  deque_destruir(deque);
+
+  return base;
+}
+
+ArbolAvl * itree_interseccion(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+  ArbolAvl *base;
+  ArbolAvl *aIntersecar;
+
+  if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
+    base = itree_copiar(arbolB);
+    aIntersecar = arbolA;
+  } else {
+    base = itree_copiar(arbolA);
+    aIntersecar = arbolB;
+  }
+
+  if (aIntersecar->arbolAvlNode == NULL) return base;
+
+  Deque *deque = deque_crear();
+  deque_push_front(deque, aIntersecar->arbolAvlNode);
+
+  while (!deque_vacio(deque)) {
+    ArbolAvlNode *nodo = deque_pop_front(deque);
+
+    if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
+    if (nodo->derecha) deque_push_front(deque, nodo->derecha);
+
+    Rango interseccion = itree_intersectar(base, nodo->rango);
+
+    if(!inexistente(interseccion)) {
+      //TODO
+    }
+  }
+
+  deque_destruir(deque);
+
+  return base;
+}
+
+ArbolAvl * itree_resta(ArbolAvl * arbolA, ArbolAvl * arbolB) {
+  //TODO
+}
+
+ArbolAvl *itree_complemento(ArbolAvl *arbol) {
+  //TODO
 }
 
 void actualizar_max_nodo(ArbolAvlNode* nodo) {

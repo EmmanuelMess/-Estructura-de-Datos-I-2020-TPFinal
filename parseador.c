@@ -196,18 +196,24 @@ void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* e
   }
 }
 
-void procesar_operacion(Metadatos metadatos, char *entrada, char *aliasA,
-                        char *aliasB) {
+void procesar_operacion(Metadatos metadatos, char *entrada, char* alias,
+  char *aliasA, char *aliasB) {
+  strncpy(alias, entrada, metadatos.largoAlias);
+  alias[metadatos.largoAlias] = '\0';
+
   if(metadatos.complemento) {
     char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=~");
     strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+    inicioAliasA[metadatos.largoOperando1] = '\0';
     return;
   }
 
   char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=");
   strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+  inicioAliasA[metadatos.largoOperando1] = '\0';
 
   char *inicioAliasB = entrada + metadatos.largoAlias + strlen("=")
                        + metadatos.largoOperando1 + 1; //1 es el largo del operando en chars
-  strncpy(aliasB, inicioAliasB, metadatos.largoOperando1);
+  strncpy(aliasB, inicioAliasB, metadatos.largoOperando2);
+  inicioAliasB[metadatos.largoOperando2] = '\0';
 }

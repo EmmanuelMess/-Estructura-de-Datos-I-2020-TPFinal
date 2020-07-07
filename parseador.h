@@ -46,7 +46,7 @@ Metadatos chequeador(char * entrada);
 void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias,
   int* enteros, Rango * rango);
 
-void procesar_operacion(Metadatos metadatos, char* entrada, char aliasA[],
-  char aliasB[]);
+void procesar_operacion(Metadatos metadatos, char* entrada, char * alias,
+  char aliasA[], char aliasB[]);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H
