@@ -5,11 +5,46 @@
 #include "tests.h"
 #include "trie/trie.h"
 #include "parseador.h"
+#include "avl/deque.h"
 
 #define DEBUG true
 
+void imprimir_intervalos(ArbolIntervalos *arbol);
+
 char* max_puntero(char* a, char* b) {
   return a > b? a: b;
+}
+
+void imprimir_intervalos(ArbolIntervalos *arbol) {
+  if (arbol->arbolAvlNode == NULL) {
+    return;
+  }
+
+  Deque *deque = deque_crear();
+
+  deque_push_front(deque, arbol->arbolAvlNode);
+
+  printf("{");
+
+  while (!deque_vacio(deque)) {
+    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+
+    if (nodo->izquierda) {
+      deque_push_front(deque, nodo->izquierda);
+    }
+    if (nodo->derecha) {
+      deque_push_front(deque, nodo->derecha);
+    }
+
+    if(nodo->rango.a == nodo->rango.b) printf("%d", nodo->rango.a);
+    else printf("%d:%d", nodo->rango.a, nodo->rango.b);
+
+    if (!deque_vacio(deque)) printf(",");
+  }
+
+  printf("}\n");
+
+  deque_destruir(deque);
 }
 
 int main(int argc, char *argv[]) {
@@ -47,7 +82,12 @@ int main(int argc, char *argv[]) {
       } else if (metadatos.imprimir) {
         char *alias = entrada + strlen("imprimir");
         ArbolIntervalos *arbol = trie_obtener(trie, alias);
+
+        imprimir_intervalos(arbol);
+
+#if DEBUG
         arbolintervalos_imprimir_arbol(arbol);
+#endif
       } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
         char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
         char aliasA[metadatos.largoOperando1 + 1];
