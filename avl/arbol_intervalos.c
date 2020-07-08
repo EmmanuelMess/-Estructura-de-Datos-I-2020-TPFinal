@@ -148,7 +148,7 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
   //TODO
 }
 
-ArbolIntervalos *arbolintervalos_complemento(ArbolIntervalos *arbol) {
+ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
   //TODO
 }
 

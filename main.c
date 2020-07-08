@@ -57,12 +57,18 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbolA = trie_obtener(trie, aliasA);
         ArbolIntervalos *arbolB = trie_obtener(trie, aliasB);
 
-        if(metadatos.union_) {
-          trie_agregar(trie, alias, arbolintervalos_union(arbolA, arbolB));
-        } else if(metadatos.interseccion) {
-          trie_agregar(trie, alias, arbolintervalos_interseccion(arbolA, arbolB));
-        } else if(metadatos.resta) {
-          trie_agregar(trie, alias, arbolintervalos_resta(arbolA, arbolB));
+        if(arbolA == NULL || arbolB == NULL) {
+          if(arbolA == NULL) printf("Alias no existe: %s\n", aliasA);
+          if(arbolB == NULL) printf("Alias no existe: %s\n", aliasB);
+        } else {
+          if (metadatos.union_) {
+            trie_agregar(trie, alias, arbolintervalos_union(arbolA, arbolB));
+          } else if (metadatos.interseccion) {
+            trie_agregar(trie, alias,
+                         arbolintervalos_interseccion(arbolA, arbolB));
+          } else if (metadatos.resta) {
+            trie_agregar(trie, alias, arbolintervalos_resta(arbolA, arbolB));
+          }
         }
       } else if (metadatos.complemento) {
         char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
@@ -71,7 +77,11 @@ int main(int argc, char *argv[]) {
 
         ArbolIntervalos *arbol = trie_obtener(trie, aliasA);
 
-        trie_agregar(trie, alias, arbolintervalos_complemento(arbol));
+        if(arbol == NULL) {
+          printf("Alias no existe: %s\n", aliasA);
+        } else {
+          trie_agregar(trie, alias, arbolintervalos_complemento(arbol));
+        }
       } else {
         char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
         ArbolIntervalos *arbol = arbolintervalos_crear();
