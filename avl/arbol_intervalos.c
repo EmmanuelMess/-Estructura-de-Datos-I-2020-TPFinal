@@ -5,10 +5,6 @@
 #include "deque.h"
 #include "matematica.h"
 
-bool inexistente(Rango rango) {
-  return rango.a > rango.b;
-}
-
 typedef ArbolIntervalosNode* (Popper(Deque*)) ;
 
 void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
@@ -106,10 +102,6 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalo
   return base;
 }
 
-Rango rango_interseccion(Rango parteA, Rango parteB) {
-  return (Rango) {.a = max(parteA.a, parteB.a), .b = min(parteA.b, parteB.b)};
-}
-
 ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
   ArbolIntervalos * base = arbolintervalos_crear();
   ArbolIntervalos *aRecorrer;
@@ -146,16 +138,6 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
   deque_destruir(deque);
 
   return base;
-}
-
-void rango_resta(Rango parteA, Rango parteB, Rango *resultadoA, Rango *resultadoB) {
-  if(parteA.a < parteB.a) {
-    *resultadoA = (Rango) {.a = parteA.a, .b = min(parteA.b, parteB.a - 1)};
-  }
-
-  if(parteB.b < parteA.b) {
-    *resultadoB = (Rango) {.a = max(parteA.a, parteB.b + 1), .b = parteA.b};
-  }
 }
 
 ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
@@ -328,10 +310,6 @@ void rebalancear(
   }
 }
 
-Rango rango_unir(Rango parteA, Rango parteB) {
-  return (Rango) {.a = min(parteA.a, parteB.a), .b = max(parteA.b, parteB.b)};
-}
-
 bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango)) {
     return false;
@@ -345,7 +323,7 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
 
   while (!inexistente(encontrado)) {
     arbolintervalos_eliminar(arbol, encontrado);
-    rango = rango_unir(rango, encontrado);
+    rango = rango_union(rango, encontrado);
     rangoExtendido = (Rango) {
       .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
       .b = rango.b < INT_MAX? rango.b + 1 : INT_MAX,
@@ -480,15 +458,11 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   return true;
 }
 
-bool existe_interseccion(Rango uno, Rango dos) {
-  return (uno.b >= dos.a && dos.b >= uno.a);
-}
-
 Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
   ArbolIntervalosNode* nodo = tree->arbolAvlNode;
 
   while (nodo != NULL) {
-    if(existe_interseccion(nodo->rango, rango)) {
+    if(rango_intersecan(nodo->rango, rango)) {
       return nodo->rango;
     }
 

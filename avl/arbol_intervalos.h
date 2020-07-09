@@ -3,14 +3,7 @@
 
 #include <limits.h>
 #include <stdbool.h>
-
-typedef struct {
-  int a, b;
-} Rango;
-
-#define RANGO_INEXISTENTE ((Rango) {.a = INT_MAX, .b = INT_MIN});
-
-bool inexistente(Rango rango);
+#include "rango.h"
 
 typedef struct _ArbolIntervalosNode {
   Rango rango;
