@@ -59,6 +59,8 @@ int main(int argc, char *argv[]) {
   Trie *trie = trie_crear();
   bool sigue = true;
 
+  printf("Tamaño maximo de una linea: 1023 caracteres\n");
+
   while (sigue) {
     printf("> ");
     char *entrada = malloc(1024 * sizeof(char));
