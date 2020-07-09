@@ -86,10 +86,11 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, char * entrada) {
 }
 
 Metadatos chequear_operacion(Metadatos metadatos, char * entrada) {
-  if(!isalnum(*entrada)) return METADATOS_ERROR_GENERAL(entrada);
+  if(!isalnum(*entrada) && *entrada != '~') return METADATOS_ERROR_GENERAL(entrada);
 
   if(*entrada == '~') {
     metadatos.complemento = true;
+    entrada++;
   }
 
   while (isalnum(*entrada)) {
@@ -167,7 +168,8 @@ Metadatos chequeador(char * entrada) {
   entrada++;
 
   if(*entrada == '{') return chequear_conjunto_expicito(metadatos, entrada);
-  else if(isalnum(*entrada)) return chequear_operacion(metadatos, entrada);
+  else if(isalnum(*entrada) || *entrada == '~')
+    return chequear_operacion(metadatos, entrada);
   else return METADATOS_ERROR_GENERAL(entrada);
 }
 
@@ -202,7 +204,7 @@ void procesar_operacion(Metadatos metadatos, char *entrada, char* alias,
   if(metadatos.complemento) {
     char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=~");
     strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
-    inicioAliasA[metadatos.largoOperando1] = '\0';
+    aliasA[metadatos.largoOperando1] = '\0';
     return;
   }
 
