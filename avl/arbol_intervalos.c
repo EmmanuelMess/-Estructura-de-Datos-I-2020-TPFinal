@@ -148,8 +148,51 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
   return base;
 }
 
+void rango_resta(Rango parteA, Rango parteB, Rango *resultadoA, Rango *resultadoB) {
+  if(parteA.a < parteB.a) {
+    *resultadoA = (Rango) {.a = parteA.a, .b = min(parteA.b, parteB.a - 1)};
+  }
+
+  if(parteB.b < parteA.b) {
+    *resultadoB = (Rango) {.a = max(parteA.a, parteB.b + 1), .b = parteA.b};
+  }
+}
+
 ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
-  //TODO
+  ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
+
+  if (arbolA->arbolAvlNode == NULL) return base;
+  if (arbolB->arbolAvlNode == NULL) return base;
+
+  Deque *deque = deque_crear();
+  deque_push_front(deque, base->arbolAvlNode);
+
+  while (!deque_vacio(deque)) {
+    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+
+    if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
+    if (nodo->derecha) deque_push_front(deque, nodo->derecha);
+
+    Rango rangoBase = nodo->rango;
+    Rango interseccion = arbolintervalos_intersectar(arbolB, rangoBase);
+
+    if(!inexistente(interseccion)) {
+      arbolintervalos_eliminar(base, rangoBase);
+
+      Rango resultadoA = RANGO_INEXISTENTE;
+      Rango resultadoB = RANGO_INEXISTENTE;
+      rango_resta(rangoBase, interseccion, &resultadoA, &resultadoB);
+
+      if(!inexistente(resultadoA)) arbolintervalos_insertar(base, resultadoA);
+      if(!inexistente(resultadoB)) arbolintervalos_insertar(base, resultadoB);
+    } else{
+      arbolintervalos_insertar(base, rangoBase);
+    }
+  }
+
+  deque_destruir(deque);
+
+  return base;
 }
 
 ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
