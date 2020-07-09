@@ -175,6 +175,8 @@ Metadatos chequeador(char * entrada) {
 
 void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
   strncpy(alias, entrada, metadatos.largoAlias);
+  alias[metadatos.largoAlias] = '\0';
+
   entrada += metadatos.largoAlias;
 
   while(*entrada != '{') {

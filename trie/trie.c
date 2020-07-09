@@ -38,7 +38,9 @@ static unsigned char reasignar(unsigned char c) {
     case ' ':
       return 33;
     default:
-      return c - 'a';
+      if('a' <= c && c <= 'z') return c - 'a';
+      if('A' <= c && c <= 'Z') return 34 + c - 'A';
+      if('0' <= c && c <= '9') return 60 + c - '0';
   }
 }
 

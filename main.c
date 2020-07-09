@@ -9,14 +9,13 @@
 
 #define DEBUG true
 
-void imprimir_intervalos(ArbolIntervalos *arbol);
-
 char* max_puntero(char* a, char* b) {
   return a > b? a: b;
 }
 
 void imprimir_intervalos(ArbolIntervalos *arbol) {
   if (arbol->arbolAvlNode == NULL) {
+    printf("{}");
     return;
   }
 
@@ -45,6 +44,35 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
   printf("}\n");
 
   deque_destruir(deque);
+}
+
+void debug1(char * alias, Metadatos metadatos, int* enteros) {
+#if DEBUG
+  printf("DEBUG INFO\n");
+  printf("Parser: %s ", alias);
+
+  for (int i = 0; i < metadatos.largo; ++i) {
+    printf("%d ", enteros[i]);
+  }
+#endif
+}
+
+void debug2(char * alias, Rango rango) {
+#if DEBUG
+  printf("DEBUG INFO\n");
+  printf("Parser: %s ", alias);
+
+  printf("%d:%d", rango.a, rango.b);
+#endif
+}
+
+void debug3(char * alias, Trie * trie) {
+#if DEBUG
+  printf("\n");
+
+  printf("Trie: %s: %s\n", alias,
+         trie_obtener(trie, alias) != NULL ? "encotrado" : "error");
+#endif
 }
 
 int main(int argc, char *argv[]) {
@@ -91,7 +119,7 @@ int main(int argc, char *argv[]) {
         arbolintervalos_imprimir_arbol(arbol);
 #endif
       } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
-        char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
+        char alias[metadatos.largoAlias + 1];
         char aliasA[metadatos.largoOperando1 + 1];
         char aliasB[metadatos.largoOperando2 + 1];
         procesar_operacion(metadatos, entrada, alias, aliasA, aliasB);
@@ -103,17 +131,22 @@ int main(int argc, char *argv[]) {
           if(arbolA == NULL) printf("Alias no existe: %s\n", aliasA);
           if(arbolB == NULL) printf("Alias no existe: %s\n", aliasB);
         } else {
-          if (metadatos.union_) {
-            trie_agregar(trie, alias, arbolintervalos_union(arbolA, arbolB));
-          } else if (metadatos.interseccion) {
-            trie_agregar(trie, alias,
-                         arbolintervalos_interseccion(arbolA, arbolB));
-          } else if (metadatos.resta) {
-            trie_agregar(trie, alias, arbolintervalos_resta(arbolA, arbolB));
-          }
+          ArbolIntervalos *resultado;
+          if (metadatos.union_)
+            resultado = arbolintervalos_union(arbolA, arbolB);
+          else if (metadatos.interseccion)
+            resultado = arbolintervalos_interseccion(arbolA, arbolB);
+          else if (metadatos.resta)
+            resultado = arbolintervalos_resta(arbolA, arbolB);
+
+
+          if (trie_obtener(trie, alias) != NULL)
+            arbolintervalos_destruir(trie_obtener(trie, alias));
+
+          trie_agregar(trie, alias, resultado);
         }
       } else if (metadatos.complemento) {
-        char *alias = malloc((metadatos.largoAlias + 1) * sizeof(char));
+        char alias[metadatos.largoAlias + 1];
         char aliasA[metadatos.largoOperando1];
         procesar_operacion(metadatos, entrada, alias, aliasA, NULL);
 
@@ -122,14 +155,19 @@ int main(int argc, char *argv[]) {
         if(arbol == NULL) {
           printf("Alias no existe: %s\n", aliasA);
         } else {
-          trie_agregar(trie, alias, arbolintervalos_complemento(arbol));
+          ArbolIntervalos *resultado = arbolintervalos_complemento(arbol);
+
+          if(trie_obtener(trie, alias) != NULL)
+            arbolintervalos_destruir(trie_obtener(trie, alias));
+
+          trie_agregar(trie, alias, resultado);
         }
       } else {
-        char *alias = calloc(metadatos.largoAlias + 1, sizeof(char));
+        char alias[metadatos.largoAlias + 1];
         ArbolIntervalos *arbol = arbolintervalos_crear();
 
         if (metadatos.esExtension) {
-          int *enteros = malloc(metadatos.largo * sizeof(int));
+          int enteros[metadatos.largo];
 
           procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
 
@@ -138,14 +176,7 @@ int main(int argc, char *argv[]) {
                                      (Rango) {.a = enteros[i], .b = enteros[i]});
           }
 
-#if DEBUG
-          printf("DEBUG INFO\n");
-          printf("Parser: %s ", alias);
-
-          for (int i = 0; i < metadatos.largo; ++i) {
-            printf("%d ", enteros[i]);
-          }
-#endif
+          debug1(alias, metadatos, enteros);
         } else {
           Rango rango;
 
@@ -153,22 +184,12 @@ int main(int argc, char *argv[]) {
 
           arbolintervalos_insertar(arbol, rango);
 
-#if DEBUG
-          printf("DEBUG INFO\n");
-          printf("Parser: %s ", alias);
-
-          printf("%d:%d", rango.a, rango.b);
-#endif
+          debug2(alias, rango);
         }
 
         trie_agregar(trie, alias, arbol);
 
-#if DEBUG
-        printf("\n");
-
-        printf("Trie: %s: %s\n", alias,
-               trie_obtener(trie, alias) != NULL ? "encotrado" : "error");
-#endif
+        debug3(alias, trie);
       }
     }
 

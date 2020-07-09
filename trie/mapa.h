@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include "trie.h"
 
-//[a:z]+[á:ú]+ñ+ü+' '
-#define CANTIDAD_LETRAS 33
+//[a:z]+[á:ú]+ñ+ü+' '+[A:Z]+[0:9]
+#define CANTIDAD_LETRAS 69
 
 typedef struct _Mapa {
   struct _Trie *elementos[CANTIDAD_LETRAS];
