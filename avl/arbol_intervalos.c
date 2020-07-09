@@ -67,7 +67,7 @@ ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
 }
 
 void arbolintervalos_destruir(ArbolIntervalos *tree) {
-  itree_recorrer_fs(tree, free, deque_pop_back);
+  itree_recorrer_fs(tree, (Accion*) free, (Popper*) deque_pop_back);
   free(tree);
 }
 
