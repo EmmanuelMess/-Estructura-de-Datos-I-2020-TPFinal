@@ -106,22 +106,28 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalo
   return base;
 }
 
+Rango rango_interseccion(Rango parteA, Rango parteB) {
+  return (Rango) {.a = max(parteA.a, parteB.a), .b = min(parteA.b, parteB.b)};
+}
+
 ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
-  ArbolIntervalos *base;
+  ArbolIntervalos * base = arbolintervalos_crear();
+  ArbolIntervalos *aRecorrer;
   ArbolIntervalos *aIntersecar;
 
   if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
-    base = arbolintervalos_copiar(arbolB);
+    aRecorrer = arbolB;
     aIntersecar = arbolA;
   } else {
-    base = arbolintervalos_copiar(arbolA);
+    aRecorrer = arbolA;
     aIntersecar = arbolB;
   }
 
+  if (aRecorrer->arbolAvlNode == NULL) return base;
   if (aIntersecar->arbolAvlNode == NULL) return base;
 
   Deque *deque = deque_crear();
-  deque_push_front(deque, aIntersecar->arbolAvlNode);
+  deque_push_front(deque, aRecorrer->arbolAvlNode);
 
   while (!deque_vacio(deque)) {
     ArbolIntervalosNode *nodo = deque_pop_front(deque);
@@ -129,10 +135,11 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
 
-    Rango interseccion = arbolintervalos_intersectar(base, nodo->rango);
+    Rango rangoBase = nodo->rango;
+    Rango interseccion = arbolintervalos_intersectar(aIntersecar, rangoBase);
 
     if(!inexistente(interseccion)) {
-      //TODO
+      arbolintervalos_insertar(base, rango_interseccion(rangoBase, interseccion));
     }
   }
 
