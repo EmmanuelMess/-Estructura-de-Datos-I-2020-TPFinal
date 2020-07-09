@@ -33,8 +33,6 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
 
 ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos * arbol);
 
-void arbolintervalos_destruir(ArbolIntervalos* tree);
-
 void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol);
 
 int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo);
@@ -42,6 +40,8 @@ int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo);
 Rango arbolintervalos_intersectar(ArbolIntervalos* tree, Rango rango);
 
 // OPERACIONES QUE EDITAN LA ENTRADA
+void arbolintervalos_destruir(ArbolIntervalos* tree);
+
 bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango);
 
 bool arbolintervalos_eliminar(ArbolIntervalos* arbol, Rango rango);
