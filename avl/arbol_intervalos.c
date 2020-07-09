@@ -3,16 +3,13 @@
 #include <string.h>
 #include "arbol_intervalos.h"
 #include "deque.h"
+#include "matematica.h"
 
 bool inexistente(Rango rango) {
   return rango.a > rango.b;
 }
 
 typedef ArbolIntervalosNode* (Popper(Deque*)) ;
-
-int max(int a, int b) {
-  return a > b? a:b;
-}
 
 void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
   if (arbol->arbolAvlNode == NULL) {
@@ -248,12 +245,30 @@ void rebalancear(
   }
 }
 
+Rango rango_unir(Rango parteA, Rango parteB) {
+  return (Rango) {.a = min(parteA.a, parteB.a), .b = max(parteA.b, parteB.b)};
+}
+
 bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango)) {
     return false;
   }
 
-  //TODO optimizar arbol
+  Rango rangoExtendido = {
+    .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
+    .b = rango.b < INT_MAX? rango.b + 1 : INT_MAX,
+  };
+  Rango encontrado = arbolintervalos_intersectar(arbol, rangoExtendido);
+
+  while (!inexistente(encontrado)) {
+    arbolintervalos_eliminar(arbol, encontrado);
+    rango = rango_unir(rango, encontrado);
+    rangoExtendido = (Rango) {
+      .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
+      .b = rango.b < INT_MAX? rango.b + 1 : INT_MAX,
+    };
+    encontrado = arbolintervalos_intersectar(arbol, rangoExtendido);
+  }
 
   ArbolIntervalosNode* nodo = calloc(1, sizeof(ArbolIntervalosNode));
   nodo->rango = rango;
