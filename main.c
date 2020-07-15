@@ -7,7 +7,7 @@
 #include "parseador.h"
 #include "avl/deque.h"
 
-#define DEBUG true
+#define DEBUG false
 
 char* max_puntero(char* a, char* b) {
   return a > b? a: b;
@@ -15,7 +15,7 @@ char* max_puntero(char* a, char* b) {
 
 void imprimir_intervalos(ArbolIntervalos *arbol) {
   if (arbol->arbolAvlNode == NULL) {
-    printf("{}");
+    printf("{}\n");
     return;
   }
 
@@ -167,8 +167,7 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbol = arbolintervalos_crear();
 
         if (metadatos.esExtension) {
-          int enteros[metadatos.largo];
-
+          int enteros[metadatos.largo+1];//std C no permite arrays automaticos de largo 0
           procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
 
           for (int i = 0; i < metadatos.largo; ++i) {
