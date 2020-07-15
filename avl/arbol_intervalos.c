@@ -1,6 +1,7 @@
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
+#include <wchar.h>
 #include "arbol_intervalos.h"
 #include "deque.h"
 #include "matematica.h"
@@ -490,7 +491,7 @@ Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
 
 void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
   if(arbol->arbolAvlNode == NULL) {
-    printf("Vacio\n");
+    wprintf(L"Vacio\n");
     return;
   }
 
@@ -507,12 +508,12 @@ void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
     ArbolIntervalosNode* nodo = deque_pop_back(deque);
 
     if(!nodo) {
-      printf(" {    NULL    }");
+      wprintf(L" {    NULL    }");
       deque_push_front(deque, NULL);
       deque_push_front(deque, NULL);
     } else {
-      printf(
-        " {m: %d, r: [%d, %d], a: %d}",
+      wprintf(
+        L" {m: %d, r: [%d, %d], a: %d}",
         nodo->maxB,
         nodo->rango.a,
         nodo->rango.b,
@@ -527,17 +528,17 @@ void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
     }
 
     if(assumedPos == i+1 && nodosEnDeque > 0) {
-      printf("\n");
+      wprintf(L"\n");
       assumedPos <<= 1;
       assumedPos += 1;
     }
   }
 
   for(;i+1 <= assumedPos; i++) {
-    printf(" {    NULL    }");
+    wprintf(L" {    NULL    }");
   }
 
-  printf("\n");
+  wprintf(L"\n");
 }
 
 int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo) {

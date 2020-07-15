@@ -6,7 +6,7 @@
 typedef struct {
   //error
   int error;
-  char* posError;
+  wchar_t * posError;
 
   //parseo de asignacion
   int largoAlias;
@@ -39,14 +39,14 @@ typedef struct {
 
 #define METADATOS_ERROR(codigoError, pos) ((Metadatos) {.error = codigoError, .posError = pos})
 
-void remover_espacios(char* entrada);
+void remover_espacios(wchar_t * entrada);
 
-Metadatos chequeador(char * entrada);
+Metadatos chequeador(wchar_t * entrada);
 
-void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias,
+void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t * alias,
   int* enteros, Rango * rango);
 
-void procesar_operacion(Metadatos metadatos, char* entrada, char * alias,
-  char aliasA[], char aliasB[]);
+void procesar_operacion(Metadatos metadatos, wchar_t* entrada, wchar_t * alias,
+                        wchar_t aliasA[], wchar_t aliasB[]);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_PARSEADOR_H

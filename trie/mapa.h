@@ -5,8 +5,8 @@
 #include <stdbool.h>
 #include "trie.h"
 
-//[a:z]+[á:ú]+ñ+ü+' '+[A:Z]+[0:9]
-#define CANTIDAD_LETRAS 69
+//[a:z]+[á:ú]+ñ+ü+[Á:Ú]+Ñ+Ü+[A:Z]+[0:9]
+#define CANTIDAD_LETRAS (26+5+1+1+5+1+1+26+10)
 
 typedef struct _Mapa {
   struct _Trie *elementos[CANTIDAD_LETRAS];
@@ -14,8 +14,7 @@ typedef struct _Mapa {
 
 Mapa* mapa_crear();
 void mapa_destruir(Mapa* mapa);
-void mapa_insertar(Mapa *mapa, int key, struct _Trie *value);
-struct _Trie* mapa_obtener(Mapa *mapa, int pos);
-bool mapa_contiene(Mapa *mapa, int key);
+void mapa_insertar(Mapa *mapa, unsigned int llave, struct _Trie *valor);
+struct _Trie* mapa_obtener(Mapa *mapa, unsigned int llave);
 
 #endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_MAPA_H

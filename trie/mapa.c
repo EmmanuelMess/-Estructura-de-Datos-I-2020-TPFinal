@@ -15,14 +15,10 @@ void mapa_destruir(Mapa* mapa) {
   free(mapa);
 }
 
-void mapa_insertar(Mapa* mapa, int key, Trie *value) {
-  mapa->elementos[key] = value;
+void mapa_insertar(Mapa* mapa, unsigned int llave, Trie *valor) {
+  mapa->elementos[llave] = valor;
 }
 
-bool mapa_contiene(Mapa* mapa, int key) {
-  return mapa->elementos[key] != NULL;
-}
-
-Trie* mapa_obtener(Mapa* mapa, int pos) {
-  return mapa->elementos[pos];
+Trie* mapa_obtener(Mapa* mapa, unsigned int llave) {
+  return mapa->elementos[llave];
 }

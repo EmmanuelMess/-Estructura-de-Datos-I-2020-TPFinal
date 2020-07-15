@@ -1,7 +1,6 @@
 #include <stdlib.h>
 #include "trie.h"
 #include "mapa.h"
-#include "../avl/arbol_intervalos.h"
 
 Trie* trie_crear() {
   Trie* trie = calloc(1, sizeof(Trie));
@@ -19,40 +18,55 @@ void trie_destruir(Trie* trie) {
   free(trie);
 }
 
-static unsigned char reasignar(unsigned char c) {
+static unsigned int reasignar(wchar_t c) {
+  if('a' <= c && c <= 'z') return c - 'a';
+
   switch (c) {
-    case 164:
+    case L'ñ':
       return 26;
-    case 160:
+    case L'ü':
       return 27;
-    case 130:
+    case L'á':
       return 28;
-    case 161:
+    case L'é':
       return 29;
-    case 162:
+    case L'í':
       return 30;
-    case 163:
+    case L'ó':
       return 31;
-    case 129:
+    case L'ú':
       return 32;
-    case ' ':
+    case L'Ñ':
       return 33;
-    default:
-      if('a' <= c && c <= 'z') return c - 'a';
-      if('A' <= c && c <= 'Z') return 34 + c - 'A';
-      if('0' <= c && c <= '9') return 60 + c - '0';
+    case L'Ü':
+      return 34;
+    case L'Á':
+      return 35;
+    case L'É':
+      return 36;
+    case L'Í':
+      return 37;
+    case L'Ó':
+      return 38;
+    case L'Ú':
+      return 39;
   }
+
+  if('A' <= c && c <= 'Z') return 40 + c - 'A';
+  if('0' <= c && c <= '9') return 66 + c - '0';
+
+  return 0;//mapeo el resto a 'a' para evitar crashes
 }
 
-static bool es_terminador(char c) {
-  return c == '\n' || c == '\0' || c == '\r';
+static bool es_terminador(wchar_t c) {
+  return c == L'\n' || c == L'\0' || c == L'\r';
 }
 
-Trie* trie_hijo(Trie* trie, char pos) {
+Trie* trie_hijo(Trie* trie, wchar_t pos) {
   return mapa_obtener(trie->mapa, reasignar(pos));
 }
 
-void trie_agregar(Trie *trie, char *palabra, ArbolIntervalos *conjunto) {
+void trie_agregar(Trie *trie, wchar_t *palabra, ArbolIntervalos *conjunto) {
   if (es_terminador(palabra[0])) {
     trie->esFinal = true;
     trie->conjunto = conjunto;
@@ -68,7 +82,7 @@ void trie_agregar(Trie *trie, char *palabra, ArbolIntervalos *conjunto) {
   }
 }
 
-ArbolIntervalos * trie_obtener(Trie* trie, char *palabra) {
+ArbolIntervalos * trie_obtener(Trie* trie, wchar_t * palabra) {
   if(es_terminador(palabra[0])) {
     if(trie->esFinal) return trie->conjunto;
     else return NULL;

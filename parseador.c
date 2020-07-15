@@ -2,12 +2,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#include <wctype.h>
+#include <wchar.h>
 #include "parseador.h"
 
 #define METADATOS_ERROR_GENERAL(pos) METADATOS_ERROR(METADATOS_ERROR_NUM, pos)
 #define METADATOS_ERROR_ARG_IMPRIMIR(pos) METADATOS_ERROR(METADATOS_ERROR_ARG_IMPRIMIR_NUM, pos)
 
-void remover_espacios(char* entrada) {
+void remover_espacios(wchar_t * entrada) {
   int i = 0;
   int j = 0;
   while (entrada[i] != '\n') {
@@ -17,9 +19,9 @@ void remover_espacios(char* entrada) {
   entrada[j] = '\0';
 }
 
-bool es_numero(char* entrada) {
-  if(isdigit(*entrada)) return true;
-  if(*entrada == '-' && isdigit(*(entrada+1))) return true;
+bool es_numero(const wchar_t* entrada) {
+  if(iswdigit(*entrada)) return true;
+  if(*entrada == '-' && iswdigit(*(entrada+1))) return true;
   return false;
 }
 
@@ -27,7 +29,7 @@ bool es_numero(char* entrada) {
  * Verifica que un conjunto sin espacios este bien formulado
  * Ej "{}", "{5,6}", "{x:80<=x<=30}"
  */
-Metadatos chequear_conjunto_expicito(Metadatos metadatos, char * entrada) {
+Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
   if(*entrada != '{') return METADATOS_ERROR_GENERAL(entrada);
 
   entrada++;
@@ -71,7 +73,7 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, char * entrada) {
 
   int len = strlen("<=x<=");
 
-  if(strncmp(entrada, "<=x<=", len) != 0) return METADATOS_ERROR_GENERAL(entrada);
+  if(wcsncmp(entrada, L"<=x<=", len) != 0) return METADATOS_ERROR_GENERAL(entrada);
   else entrada += len;
 
   while (es_numero(entrada)) entrada++;
@@ -85,15 +87,15 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, char * entrada) {
   return metadatos;
 }
 
-Metadatos chequear_operacion(Metadatos metadatos, char * entrada) {
-  if(!isalnum(*entrada) && *entrada != '~') return METADATOS_ERROR_GENERAL(entrada);
+Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
+  if(!iswalnum(*entrada) && *entrada != '~') return METADATOS_ERROR_GENERAL(entrada);
 
   if(*entrada == '~') {
     metadatos.complemento = true;
     entrada++;
   }
 
-  while (isalnum(*entrada)) {
+  while (iswalnum(*entrada)) {
     metadatos.largoOperando1++;
     entrada++;
   }
@@ -119,7 +121,7 @@ Metadatos chequear_operacion(Metadatos metadatos, char * entrada) {
 
   entrada++;
 
-  while (isalnum(*entrada)) {
+  while (iswalnum(*entrada)) {
     metadatos.largoOperando2++;
     entrada++;
   }
@@ -133,10 +135,10 @@ Metadatos chequear_operacion(Metadatos metadatos, char * entrada) {
  * Crea infomacion que necesita la funcion procesar_asignacion.
  * Entrada no puede tener espacios o caracteres vacios
  */
-Metadatos chequeador(char * entrada) {
-  const char* ordenSalir = "salir";
-  if(strncmp(ordenSalir, entrada, strlen(ordenSalir)) == 0) {
-    if (strlen(entrada) != strlen(ordenSalir)) {
+Metadatos chequeador(wchar_t * entrada) {
+  const wchar_t * ordenSalir = L"salir";
+  if(wcsncmp(ordenSalir, entrada, wcslen(ordenSalir)) == 0) {
+    if (wcslen(entrada) != wcslen(ordenSalir)) {
       return METADATOS_ERROR_GENERAL(entrada);
     }
 
@@ -145,9 +147,9 @@ Metadatos chequeador(char * entrada) {
     return metadatos;
   }
 
-  const char* ordenImprimir = "imprimir";
-  if(strncmp(ordenImprimir, entrada, strlen(ordenImprimir)) == 0) {
-    if (strlen(entrada) == strlen(ordenImprimir)) {
+  const wchar_t * ordenImprimir = L"imprimir";
+  if(wcsncmp(ordenImprimir, entrada, wcslen(ordenImprimir)) == 0) {
+    if (wcslen(entrada) == wcslen(ordenImprimir)) {
       return METADATOS_ERROR_ARG_IMPRIMIR(entrada);
     }
 
@@ -158,7 +160,7 @@ Metadatos chequeador(char * entrada) {
 
   Metadatos metadatos = { 0 };
 
-  while (isalnum(*entrada)) {
+  while (iswalnum(*entrada)) {
     metadatos.largoAlias++;
     entrada++;
   }
@@ -168,13 +170,13 @@ Metadatos chequeador(char * entrada) {
   entrada++;
 
   if(*entrada == '{') return chequear_conjunto_expicito(metadatos, entrada);
-  else if(isalnum(*entrada) || *entrada == '~')
+  else if(iswalnum(*entrada) || *entrada == '~')
     return chequear_operacion(metadatos, entrada);
   else return METADATOS_ERROR_GENERAL(entrada);
 }
 
-void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* enteros, Rango * rango) {
-  strncpy(alias, entrada, metadatos.largoAlias);
+void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t* alias, int* enteros, Rango * rango) {
+  wcsncpy(alias, entrada, metadatos.largoAlias);
   alias[metadatos.largoAlias] = '\0';
 
   entrada += metadatos.largoAlias;
@@ -188,34 +190,34 @@ void procesar_asignacion(Metadatos metadatos, char* entrada, char* alias, int* e
   if(metadatos.esExtension) {
     while (*entrada != '}') {
       entrada++;
-      enteros[indiceEnteros++] = strtol(entrada, &entrada, 10);
+      enteros[indiceEnteros++] = wcstol(entrada, &entrada, 10);
     }
   } else {
     entrada += strlen("{x:");
-    rango->a = strtol(entrada, &entrada, 10);
+    rango->a = wcstol(entrada, &entrada, 10);
     entrada += strlen("<=x<=");
-    rango->b = strtol(entrada, &entrada, 10);
+    rango->b = wcstol(entrada, &entrada, 10);
   }
 }
 
-void procesar_operacion(Metadatos metadatos, char *entrada, char* alias,
-  char *aliasA, char *aliasB) {
-  strncpy(alias, entrada, metadatos.largoAlias);
+void procesar_operacion(Metadatos metadatos, wchar_t *entrada, wchar_t* alias,
+                        wchar_t *aliasA, wchar_t *aliasB) {
+  wcsncpy(alias, entrada, metadatos.largoAlias);
   alias[metadatos.largoAlias] = '\0';
 
   if(metadatos.complemento) {
-    char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=~");
-    strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+    wchar_t *inicioAliasA = entrada + metadatos.largoAlias + strlen("=~");
+    wcsncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
     aliasA[metadatos.largoOperando1] = '\0';
     return;
   }
 
-  char *inicioAliasA = entrada + metadatos.largoAlias + strlen("=");
-  strncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
+  wchar_t *inicioAliasA = entrada + metadatos.largoAlias + strlen("=");
+  wcsncpy(aliasA, inicioAliasA, metadatos.largoOperando1);
   aliasA[metadatos.largoOperando1] = '\0';
 
-  char *inicioAliasB = entrada + metadatos.largoAlias + strlen("=")
+  wchar_t *inicioAliasB = entrada + metadatos.largoAlias + strlen("=")
                        + metadatos.largoOperando1 + 1; //1 es el largo del operando en chars
-  strncpy(aliasB, inicioAliasB, metadatos.largoOperando2);
+  wcsncpy(aliasB, inicioAliasB, metadatos.largoOperando2);
   aliasB[metadatos.largoOperando2] = '\0';
 }
