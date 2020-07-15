@@ -46,6 +46,12 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
   deque_destruir(deque);
 }
 
+void debug0(ArbolIntervalos *arbol) {
+#if DEBUG
+  arbolintervalos_imprimir_arbol(arbol);
+#endif
+}
+
 void debug1(char * alias, Metadatos metadatos, int* enteros) {
 #if DEBUG
   printf("DEBUG INFO\n");
@@ -114,10 +120,7 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbol = trie_obtener(trie, alias);
 
         imprimir_intervalos(arbol);
-
-#if DEBUG
-        arbolintervalos_imprimir_arbol(arbol);
-#endif
+        debug0(arbol);
       } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
         char alias[metadatos.largoAlias + 1];
         char aliasA[metadatos.largoOperando1 + 1];
