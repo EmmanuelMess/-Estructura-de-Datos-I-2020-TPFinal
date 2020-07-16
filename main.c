@@ -2,12 +2,12 @@
 #include <stdio.h>
 #include <locale.h>
 #include <wchar.h>
-#include "tests.h"
+
 #include "trie/trie.h"
 #include "parseador.h"
 #include "avl/deque.h"
 
-#define DEBUG true
+#include "debug.h"
 
 wchar_t* max_puntero(wchar_t* a, wchar_t* b) {
   return a > b? a: b;
@@ -46,49 +46,8 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
   deque_destruir(deque);
 }
 
-void debug0(ArbolIntervalos *arbol) {
-#if DEBUG
-  arbolintervalos_imprimir_arbol(arbol);
-#endif
-}
-
-void debug1(wchar_t * alias, Metadatos metadatos, int* enteros) {
-#if DEBUG
-  wprintf(L"DEBUG INFO\n");
-  wprintf(L"Parser: %s ", alias);
-
-  for (int i = 0; i < metadatos.largo; ++i) {
-    wprintf(L"%d ", enteros[i]);
-  }
-#endif
-}
-
-void debug2(wchar_t * alias, Rango rango) {
-#if DEBUG
-  wprintf(L"DEBUG INFO\n");
-  wprintf(L"Parser: %s ", alias);
-
-  wprintf(L"%d:%d", rango.a, rango.b);
-#endif
-}
-
-void debug3(wchar_t * alias, Trie * trie) {
-#if DEBUG
-  wprintf(L"\n");
-
-  wprintf(L"Trie: %ls: %ls\n", alias,
-         trie_obtener(trie, alias) != NULL ? L"encotrado" : L"error");
-#endif
-}
-
 int main(int argc, char *argv[]) {
-#if DEBUG
-  if (argc == 2) {
-    main_tests();
-
-    return 0;
-  }
-#endif
+  debug_main(argc, argv);
 
   if(fwide (stdout, 1) <= 0)
     puts("No se pudo crear la salida correctamente, es posible que no ande el imprimir\n");
