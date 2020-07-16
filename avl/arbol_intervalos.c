@@ -1,5 +1,3 @@
-#include <malloc.h>
-#include <stdlib.h>
 #include <string.h>
 #include <wchar.h>
 #include "arbol_intervalos.h"
@@ -76,6 +74,9 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalo
   ArbolIntervalos *base;
   ArbolIntervalos *aUnir;
 
+  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolB);
+  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
+
   if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
     base = arbolintervalos_copiar(arbolB);
     aUnir = arbolA;
@@ -83,8 +84,6 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalo
     base = arbolintervalos_copiar(arbolA);
     aUnir = arbolB;
   }
-
-  if (aUnir->arbolAvlNode == NULL) return base;
 
   Deque *deque = deque_crear();
   deque_push_front(deque, aUnir->arbolAvlNode);
@@ -108,6 +107,9 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
   ArbolIntervalos *aRecorrer;
   ArbolIntervalos *aIntersecar;
 
+  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
+  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolB);
+
   if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
     aRecorrer = arbolB;
     aIntersecar = arbolA;
@@ -115,9 +117,6 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
     aRecorrer = arbolA;
     aIntersecar = arbolB;
   }
-
-  if (aRecorrer->arbolAvlNode == NULL) return base;
-  if (aIntersecar->arbolAvlNode == NULL) return base;
 
   Deque *deque = deque_crear();
   deque_push_front(deque, aRecorrer->arbolAvlNode);
@@ -142,10 +141,10 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
 }
 
 ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
-  ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
+  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_crear();
+  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
 
-  if (arbolA->arbolAvlNode == NULL) return base;
-  if (arbolB->arbolAvlNode == NULL) return base;
+  ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
 
   Deque *deque = deque_crear();
   deque_push_front(deque, base->arbolAvlNode);

@@ -1,6 +1,5 @@
 #ifndef ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H
 #define ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H
-
 #include <limits.h>
 #include <stdbool.h>
 #include "rango.h"
