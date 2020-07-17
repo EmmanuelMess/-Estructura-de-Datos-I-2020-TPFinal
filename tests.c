@@ -105,9 +105,27 @@ void agregar_tests() {
   arbolintervalos_destruir(arbol);
 }
 
+void eliminar_tests() {
+  ArbolIntervalos * arbol = crear_arbol_elemento(15);
+  arbolintervalos_insertar(arbol, elem(17));
+  arbolintervalos_insertar(arbol, elem(19));
+  arbolintervalos_insertar(arbol, elem(21));
+  arbolintervalos_insertar(arbol, elem(23));
+
+  arbolintervalos_eliminar(arbol, elem(21));
+  arbolintervalos_eliminar(arbol, elem(17));
+  arbolintervalos_eliminar(arbol, elem(19));
+  arbolintervalos_eliminar(arbol, elem(23));
+  arbolintervalos_eliminar(arbol, elem(15));
+  assert(arbol->arbolAvlNode == NULL);
+
+  arbolintervalos_destruir(arbol);
+}
+
 void main_tests() {
   //basicos arbol
   agregar_tests();
+  eliminar_tests();
 
   //extras arbol
   uniones_tests();

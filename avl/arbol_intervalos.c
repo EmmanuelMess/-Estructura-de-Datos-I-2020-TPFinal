@@ -282,18 +282,26 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
       deque_push_front(dequeDireccion, posicionDelNodoSacado);
 
       while (nuevoHijo->izquierda != NULL) {
+        posicionDelNodoSacado = &(nuevoHijo->izquierda);
         nuevoHijo = nuevoHijo->izquierda;
-        posicionDelNodoSacado = &(nodoAEliminar->derecha);
 
         deque_push_front(dequeDireccion, posicionDelNodoSacado);
       }
 
-      *posicionDelNodoSacado = NULL;
+      if(*posicionDelNodoSacado == NULL) {
+        posicionDelNodoSacado = deque_pop_front(dequeDireccion);
+      } else {
+        deque_pop_front(dequeDireccion);
+      }
 
-      deque_pop_front(dequeDireccion);
+      *posicionDelNodoSacado = nuevoHijo->derecha;
 
-      nuevoHijo->izquierda = nodoAEliminar->izquierda;
-      nuevoHijo->derecha = nodoAEliminar->derecha;
+      if(nodoAEliminar->izquierda == nuevoHijo) nuevoHijo->izquierda = NULL;
+      else if(nodoAEliminar->derecha == nuevoHijo) nuevoHijo->derecha = NULL;
+      else {
+        nuevoHijo->izquierda = nodoAEliminar->izquierda;
+        nuevoHijo->derecha = nodoAEliminar->derecha;
+      }
 
       *posicionDelNodoAEliminar = nuevoHijo;
     } else if (nodoAEliminar->izquierda != NULL) {
