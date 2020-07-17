@@ -24,14 +24,6 @@ ArbolIntervalos * arbolintervalos_crear();
 
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos* arbol);
 
-ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
-
-ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
-
-ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
-
-ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos * arbol);
-
 void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol);
 
 int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo);

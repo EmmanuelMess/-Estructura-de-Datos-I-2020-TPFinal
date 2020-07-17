@@ -6,6 +6,7 @@
 #include "trie/trie.h"
 #include "parseador.h"
 #include "avl/deque.h"
+#include "avl/arbol_intervalos_extras.h"
 
 #include "debug.h"
 
