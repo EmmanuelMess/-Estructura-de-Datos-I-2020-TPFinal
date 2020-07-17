@@ -24,9 +24,9 @@ ArbolIntervalos * arbolintervalos_crear();
 
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos* arbol);
 
-void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol);
+void arbolintervalos_imprimir(ArbolIntervalos *arbol);
 
-int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo);
+int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo);
 
 Rango arbolintervalos_intersectar(ArbolIntervalos* tree, Rango rango);
 

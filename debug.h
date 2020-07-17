@@ -28,7 +28,7 @@ void debug_main(int argc, char *argv[]) {
 
 void debug0(ArbolIntervalos *arbol) {
 #if DEBUG
-  arbolintervalos_imprimir_arbol(arbol);
+  arbolintervalos_imprimir(arbol);
 #endif
 }
 

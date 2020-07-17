@@ -83,6 +83,18 @@ void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
   }
 }
 
+void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
+  if(nodo->izquierda && nodo->derecha) {
+    nodo->alto = max(nodo->izquierda->alto, nodo->derecha->alto) + 1;
+  } else if(nodo->izquierda) {
+    nodo->alto = nodo->izquierda->alto + 1;
+  } else if(nodo->derecha) {
+    nodo->alto = nodo->derecha->alto + 1;
+  } else {
+    nodo->alto = 1;
+  }
+}
+
 void rotacion_simple_izquierda(
   ArbolIntervalosNode** posicionDelNodo,
   ArbolIntervalosNode* nodo
@@ -98,7 +110,9 @@ void rotacion_simple_izquierda(
   nuevoNietoDerecha->alto -= 2;
 
   actualizar_max_nodo(nuevoNietoDerecha);
+  actualizar_alto_nodo(nuevoNietoDerecha);
   actualizar_max_nodo(nuevoHijo);
+  actualizar_alto_nodo(nuevoHijo);
 }
 
 void rotacion_simple_derecha(
@@ -116,7 +130,9 @@ void rotacion_simple_derecha(
   nuevoNietoIzquierda->alto -= 2;
 
   actualizar_max_nodo(nuevoNietoIzquierda);
+  actualizar_alto_nodo(nuevoNietoIzquierda);
   actualizar_max_nodo(nuevoHijo);
+  actualizar_alto_nodo(nuevoHijo);
 }
 
 void rebalancear(
@@ -128,32 +144,24 @@ void rebalancear(
 
     actualizar_max_nodo(chequear);
 
-    if(chequear->izquierda && chequear->derecha) {
-      chequear->alto = max(chequear->izquierda->alto, chequear->derecha->alto) + 1;
-    } else if(chequear->izquierda) {
-      chequear->alto = chequear->izquierda->alto + 1;
-    } else if(chequear->derecha) {
-      chequear->alto = chequear->derecha->alto + 1;
-    } else {
-      chequear->alto = 1;
-    }
+    actualizar_alto_nodo(chequear);
 
-    if(-1 <= arbolintervalos_factor_de_equilibrio(chequear)
-       && arbolintervalos_factor_de_equilibrio(chequear) <= 1) {
+    if(-1 <= arbolintervalos_factor_equilibrio(chequear)
+       && arbolintervalos_factor_equilibrio(chequear) <= 1) {
       continue;
     }
 
-    if (arbolintervalos_factor_de_equilibrio(chequear->izquierda) < 0) {
+    if (arbolintervalos_factor_equilibrio(chequear->izquierda) < 0) {
       rotacion_simple_izquierda(posicionDelNodo, chequear);
       break;
-    } else if (arbolintervalos_factor_de_equilibrio(chequear->derecha) > 0) {
+    } else if (arbolintervalos_factor_equilibrio(chequear->derecha) > 0) {
       rotacion_simple_derecha(posicionDelNodo, chequear);
       break;
-    } else if(arbolintervalos_factor_de_equilibrio(chequear->izquierda) > 0) {
+    } else if(arbolintervalos_factor_equilibrio(chequear->izquierda) > 0) {
       rotacion_simple_derecha(&(chequear->izquierda), chequear->izquierda);
       rotacion_simple_izquierda(posicionDelNodo, chequear);
       break;
-    } else if(arbolintervalos_factor_de_equilibrio(chequear->derecha) < 0) {
+    } else if(arbolintervalos_factor_equilibrio(chequear->derecha) < 0) {
       rotacion_simple_izquierda(&(chequear->derecha), chequear->derecha);
       rotacion_simple_derecha(posicionDelNodo, chequear);
       break;
@@ -163,6 +171,7 @@ void rebalancear(
   while (!deque_vacio(dequeDireccion)) {
     ArbolIntervalosNode** chequear = deque_pop_front(dequeDireccion);
     actualizar_max_nodo(*chequear);
+    actualizar_alto_nodo(*chequear);
   }
 }
 
@@ -344,7 +353,7 @@ Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
   return RANGO_INEXISTENTE;
 }
 
-void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
+void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
   if(arbol->arbolAvlNode == NULL) {
     wprintf(L"Vacio\n");
     return;
@@ -396,7 +405,11 @@ void arbolintervalos_imprimir_arbol(ArbolIntervalos *arbol) {
   wprintf(L"\n");
 }
 
-int arbolintervalos_factor_de_equilibrio(ArbolIntervalosNode *nodo) {
+int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo) {
+  if(nodo == NULL) {
+    return 0;
+  }
+
   if(nodo->derecha && nodo->izquierda) {
     return nodo->derecha->alto - nodo->izquierda->alto;
   } else if(nodo->derecha) {
