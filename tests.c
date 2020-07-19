@@ -1,5 +1,6 @@
 #include "tests.h"
 #include <assert.h>
+#include <malloc.h>
 #include "tests.h"
 #include "avl/arbol_intervalos_extras.h"
 #include "avl/arbol_intervalos.h"
@@ -55,18 +56,18 @@ void complemento_en_trie(Trie * trie, wchar_t * alias, wchar_t * aliasA) {
   trie_agregar(trie, alias, arbolintervalos_complemento(arbolA));
 }
 
-void unir(ArbolIntervalos ** dest, ArbolIntervalos * src) {
-  ArbolIntervalos * arbol = arbolintervalos_union(*dest, src);
-  *dest = arbol;
-}
-
 void uniones_tests_completo() {
   ArbolIntervalos * arbol = arbolintervalos_crear();
-  for (int i = -2000; i < 2000; i += 2) {
+
+  for (int i = -1000; i < 1000; i += 2) {
     ArbolIntervalos * arbol1 = crear_arbol_elemento(i);
-    unir(&arbol, arbol1);
+    ArbolIntervalos * tmp = arbolintervalos_union(arbol, arbol1);
+    arbolintervalos_destruir(arbol);
     arbolintervalos_destruir(arbol1);
+    arbol = tmp;
   }
+
+  arbolintervalos_destruir(arbol);
 }
 
 
@@ -78,17 +79,23 @@ void uniones_tests() {
   ArbolIntervalos * arbol5 = crear_arbol_elemento(23);
 
   ArbolIntervalos * arbol = arbolintervalos_crear();
-  unir(&arbol, arbol1);
-  unir(&arbol, arbol2);
-  unir(&arbol, arbol3);
-  unir(&arbol, arbol4);
-  unir(&arbol, arbol5);
+  ArbolIntervalos * arbolTmp1 = arbolintervalos_union(arbol, arbol1);
+  ArbolIntervalos * arbolTmp2 = arbolintervalos_union(arbolTmp1, arbol2);
+  ArbolIntervalos * arbolTmp3 = arbolintervalos_union(arbolTmp2, arbol3);
+  ArbolIntervalos * arbolTmp4 = arbolintervalos_union(arbolTmp3, arbol4);
+  ArbolIntervalos * arbolTmp5 = arbolintervalos_union(arbolTmp4, arbol5);
 
+  arbolintervalos_destruir(arbol);
   arbolintervalos_destruir(arbol1);
   arbolintervalos_destruir(arbol2);
   arbolintervalos_destruir(arbol3);
   arbolintervalos_destruir(arbol4);
   arbolintervalos_destruir(arbol5);
+  arbolintervalos_destruir(arbolTmp1);
+  arbolintervalos_destruir(arbolTmp2);
+  arbolintervalos_destruir(arbolTmp3);
+  arbolintervalos_destruir(arbolTmp4);
+  arbolintervalos_destruir(arbolTmp5);
 }
 
 Rango elem(int elemento) {
