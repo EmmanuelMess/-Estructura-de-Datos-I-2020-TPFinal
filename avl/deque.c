@@ -20,32 +20,31 @@ bool deque_vacio(Deque *deque) {
 }
 
 void * deque_pop_back(Deque *deque) {
-  DequeNode* tmp = deque->ultimoNodo;
+  DequeNode *tmp = deque->ultimoNodo;
 
-  ArbolIntervalosNode* elemento = deque->ultimoNodo->arbolAvl;
+  ArbolIntervalosNode *elemento = deque->ultimoNodo->arbolAvl;
   deque->ultimoNodo = deque->ultimoNodo->anterior;
 
-  if(deque->ultimoNodo != NULL) {
+  if (deque->ultimoNodo != NULL)
     deque->ultimoNodo->siguente = NULL;
-  } else {
+  else
     deque->primerNodo = NULL;
-  }
+
 
   free(tmp);
   return elemento;
 }
 
 void * deque_pop_front(Deque *deque) {
-  DequeNode* tmp = deque->primerNodo;
+  DequeNode *tmp = deque->primerNodo;
 
-  ArbolIntervalosNode* elemento = deque->primerNodo->arbolAvl;
+  ArbolIntervalosNode *elemento = deque->primerNodo->arbolAvl;
   deque->primerNodo = deque->primerNodo->siguente;
 
-  if(deque->primerNodo != NULL) {
+  if (deque->primerNodo != NULL)
     deque->primerNodo->anterior = NULL;
-  } else {
+  else
     deque->ultimoNodo = NULL;
-  }
 
   free(tmp);
   return elemento;
@@ -66,36 +65,36 @@ void deque_push_front(Deque *deque, void *elemento) {
     deque->ultimoNodo = node;
   } else {
     deque->primerNodo->anterior = node;
-
     deque->primerNodo = node;
   }
 }
 
-int deque_largo(Deque *deque) {
+int deque_imprimir(Deque *deque) {
   if(deque->primerNodo == NULL) {
     wprintf(L"Vacio\n");
     return 0;
   }
 
-  for(DequeNode* inicio = deque->primerNodo; inicio != deque->ultimoNodo; inicio = inicio->siguente) {
+  for(DequeNode* inicio = deque->primerNodo; inicio != deque->ultimoNodo;
+  inicio = inicio->siguente) {
     ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) inicio->arbolAvl);
-    if(nodo == NULL) {
+    if (nodo == NULL)
       wprintf(L"NULL");
-      continue;
-    }
-
-    wprintf(
-      L" {m: %d, r: [%d, %d], a: %d}",
-      nodo->maxB,
-      nodo->rango.a,
-      nodo->rango.b,
-      nodo->alto
-    );
+    else
+      wprintf(
+        L" {m: %d, r: [%d, %d], a: %d}",
+        nodo->maxB,
+        nodo->rango.a,
+        nodo->rango.b,
+        nodo->alto
+      );
   }
 
   ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) deque->ultimoNodo->arbolAvl);
 
-  if(nodo != NULL)
+  if (nodo == NULL)
+    wprintf(L"NULL");
+  else
     wprintf(
       L" {m: %d, r: [%d, %d], a: %d}",
       nodo->maxB,
@@ -103,7 +102,6 @@ int deque_largo(Deque *deque) {
       nodo->rango.b,
       nodo->alto
     );
- else       wprintf(L"NULL");
 
   wprintf(L"\n");
   return 0;

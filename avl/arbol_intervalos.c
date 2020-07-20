@@ -1,5 +1,6 @@
 #include <string.h>
 #include <wchar.h>
+#include <assert.h>
 #include "arbol_intervalos.h"
 #include "deque.h"
 #include "matematica.h"
@@ -7,9 +8,7 @@
 typedef ArbolIntervalosNode* (Popper(Deque*)) ;
 
 void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
-  if (arbol->arbolAvlNode == NULL) {
-    return;
-  }
+  if (arbol->arbolAvlNode == NULL) return;
 
   Deque *deque = deque_crear();
 
@@ -18,12 +17,10 @@ void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
   while (!deque_vacio(deque)) {
     ArbolIntervalosNode *nodo = pop(deque);
 
-    if (nodo->izquierda) {
+    if (nodo->izquierda)
       deque_push_front(deque, nodo->izquierda);
-    }
-    if (nodo->derecha) {
+    if (nodo->derecha)
       deque_push_front(deque, nodo->derecha);
-    }
 
     actuar(nodo);
   }
@@ -40,9 +37,8 @@ ArbolIntervalos *arbolintervalos_crear() {
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   ArbolIntervalos * copia = arbolintervalos_crear();
 
-  if(arbol->arbolAvlNode == NULL) {
+  if(arbol->arbolAvlNode == NULL)
     return copia;
-  }
 
   Deque* deque = deque_crear();
   deque_push_front(deque, arbol->arbolAvlNode);
@@ -50,12 +46,11 @@ ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   while (!deque_vacio(deque)) {
     ArbolIntervalosNode* nodo = deque_pop_front(deque);
 
-    if(nodo->izquierda) {
+    if(nodo->izquierda)
       deque_push_front(deque, nodo->izquierda);
-    }
-    if(nodo->derecha) {
+
+    if(nodo->derecha)
       deque_push_front(deque, nodo->derecha);
-    }
 
     arbolintervalos_insertar(copia, nodo->rango);
   }
@@ -71,28 +66,26 @@ void arbolintervalos_destruir(ArbolIntervalos *tree) {
 }
 
 void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
-  if(nodo->izquierda == NULL && nodo->derecha == NULL) {
+  if (nodo->izquierda == NULL && nodo->derecha == NULL)
     nodo->maxB = nodo->rango.b;
-  } else if(nodo->izquierda == NULL) {
+  else if (nodo->izquierda == NULL)
     nodo->maxB = nodo->derecha->maxB;
-  } else if (nodo->derecha == NULL) {
+  else if (nodo->derecha == NULL)
     nodo->maxB = nodo->izquierda->maxB;
-  } else {
+  else
     nodo->maxB = nodo->izquierda->maxB > nodo->derecha->maxB ?
                  nodo->izquierda->maxB : nodo->derecha->maxB;
-  }
 }
 
 void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
-  if(nodo->izquierda && nodo->derecha) {
+  if (nodo->izquierda && nodo->derecha)
     nodo->alto = max(nodo->izquierda->alto, nodo->derecha->alto) + 1;
-  } else if(nodo->izquierda) {
+  else if (nodo->izquierda)
     nodo->alto = nodo->izquierda->alto + 1;
-  } else if(nodo->derecha) {
+  else if (nodo->derecha)
     nodo->alto = nodo->derecha->alto + 1;
-  } else {
+  else
     nodo->alto = 1;
-  }
 }
 
 void rotacion_simple_izquierda(
@@ -138,7 +131,9 @@ void rotacion_simple_derecha(
 void rebalancear(
   Deque* dequeDireccion
 ) {
-  while (!deque_vacio(dequeDireccion)) {
+  bool hizoRotacion = false;
+
+  while (!deque_vacio(dequeDireccion) && !hizoRotacion) {
     ArbolIntervalosNode** posicionDelNodo = (ArbolIntervalosNode**) deque_pop_front(dequeDireccion);
     ArbolIntervalosNode* chequear = *posicionDelNodo;
 
@@ -146,25 +141,23 @@ void rebalancear(
 
     actualizar_alto_nodo(chequear);
 
-    if(-1 <= arbolintervalos_factor_equilibrio(chequear)
-       && arbolintervalos_factor_equilibrio(chequear) <= 1) {
-      continue;
-    }
-
-    if (arbolintervalos_factor_equilibrio(chequear->izquierda) < 0) {
-      rotacion_simple_izquierda(posicionDelNodo, chequear);
-      break;
-    } else if (arbolintervalos_factor_equilibrio(chequear->derecha) > 0) {
-      rotacion_simple_derecha(posicionDelNodo, chequear);
-      break;
-    } else if(arbolintervalos_factor_equilibrio(chequear->izquierda) > 0) {
-      rotacion_simple_derecha(&(chequear->izquierda), chequear->izquierda);
-      rotacion_simple_izquierda(posicionDelNodo, chequear);
-      break;
-    } else if(arbolintervalos_factor_equilibrio(chequear->derecha) < 0) {
-      rotacion_simple_izquierda(&(chequear->derecha), chequear->derecha);
-      rotacion_simple_derecha(posicionDelNodo, chequear);
-      break;
+    if (arbolintervalos_factor_equilibrio(chequear) < -1 ||
+        1 < arbolintervalos_factor_equilibrio(chequear)) {
+      if (arbolintervalos_factor_equilibrio(chequear->izquierda) < 0) {
+        rotacion_simple_izquierda(posicionDelNodo, chequear);
+        hizoRotacion = true;
+      } else if (arbolintervalos_factor_equilibrio(chequear->derecha) > 0) {
+        rotacion_simple_derecha(posicionDelNodo, chequear);
+        hizoRotacion = true;
+      } else if (arbolintervalos_factor_equilibrio(chequear->izquierda) > 0) {
+        rotacion_simple_derecha(&(chequear->izquierda), chequear->izquierda);
+        rotacion_simple_izquierda(posicionDelNodo, chequear);
+        hizoRotacion = true;
+      } else if (arbolintervalos_factor_equilibrio(chequear->derecha) < 0) {
+        rotacion_simple_izquierda(&(chequear->derecha), chequear->derecha);
+        rotacion_simple_derecha(posicionDelNodo, chequear);
+        hizoRotacion = true;
+      }
     }
   }
 
@@ -176,9 +169,8 @@ void rebalancear(
 }
 
 bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
-  if(inexistente(rango)) {
+  if(inexistente(rango))
     return false;
-  }
 
   Rango rangoExtendido = {
     .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
@@ -212,13 +204,13 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
       ArbolIntervalosNode *chequear = *pos;
 
       if (rango.a < chequear->rango.a
-          || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
+          || (chequear->rango.a == rango.a && rango.b < chequear->rango.b))
         pos = &((*pos)->izquierda);
-      } else if (chequear->rango.a < rango.a
-                 || (chequear->rango.a == rango.a &&
-                     chequear->rango.b < rango.b)) {
+      else if (chequear->rango.a < rango.a
+               || (chequear->rango.a == rango.a &&
+                   chequear->rango.b < rango.b))
         pos = &((*pos)->derecha);
-      } else {
+      else {
         deque_destruir(dequeDireccion);
 
         return false;
@@ -241,9 +233,8 @@ struct NodoAEliminar {
 };
 
 bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolIntervalos *arbol, Rango rango) {
-  if(arbol->arbolAvlNode == NULL) {
+  if(arbol->arbolAvlNode == NULL)
     return false;
-  }
 
   ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
 
@@ -253,13 +244,13 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
     ArbolIntervalosNode *chequear = *pos;
 
     if (rango.a < chequear->rango.a
-        || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
+        || (chequear->rango.a == rango.a && rango.b < chequear->rango.b))
       pos = &((*pos)->izquierda);
-    } else if (chequear->rango.a < rango.a
-               || (chequear->rango.a == rango.a &&
-                   chequear->rango.b < rango.b)) {
+    else if (chequear->rango.a < rango.a
+             || (chequear->rango.a == rango.a &&
+                 chequear->rango.b < rango.b))
       pos = &((*pos)->derecha);
-    } else if (rango.a == (*pos)->rango.a && rango.b == (*pos)->rango.b) {
+    else if (rango.a == (*pos)->rango.a && rango.b == (*pos)->rango.b) {
       x->nodoAEliminar = *pos;
       x->posicionDelNodoAEliminar = pos;
       return true;
@@ -274,9 +265,8 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
 
 
 bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
-  if(arbol->arbolAvlNode == NULL) {
+  if(arbol->arbolAvlNode == NULL)
     return false;
-  }
 
   Deque *dequeDireccion = deque_crear();
 
@@ -285,7 +275,7 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   rastrear_nodo(&aEliminar, dequeDireccion, arbol, rango);
 
   ArbolIntervalosNode ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
-  ArbolIntervalosNode *nodoAEliminar = aEliminar.nodoAEliminar;
+  ArbolIntervalosNode * nodoAEliminar = aEliminar.nodoAEliminar;
 
   {//Rastreo del nodo que lo reemplaza
     if (nodoAEliminar->izquierda != NULL && nodoAEliminar->derecha != NULL) {
@@ -311,13 +301,12 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
       *posicionDelNodoSacado = nuevoHijo->derecha;
 
       nodoAEliminar = nuevoHijo;
-    } else if (nodoAEliminar->izquierda != NULL) {
+    } else if (nodoAEliminar->izquierda != NULL)
       *posicionDelNodoAEliminar = nodoAEliminar->izquierda;
-    } else if (nodoAEliminar->derecha != NULL) {
+    else if (nodoAEliminar->derecha != NULL)
       *posicionDelNodoAEliminar = nodoAEliminar->derecha;
-    } else {
+    else
       *posicionDelNodoAEliminar = NULL;
-    }
 
     deque_pop_front(dequeDireccion);
 
@@ -332,29 +321,25 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 }
 
 Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
-  ArbolIntervalosNode* nodo = tree->arbolAvlNode;
+  ArbolIntervalosNode *nodo = tree->arbolAvlNode;
 
   while (nodo != NULL) {
-    if(rango_intersecan(nodo->rango, rango)) {
+    if (rango_intersecan(nodo->rango, rango))
       return nodo->rango;
-    }
 
-    if(nodo->maxB < rango.a) {
+    if (nodo->maxB < rango.a)
       return RANGO_INEXISTENTE;
-    }
 
-    if(rango.a <= nodo->rango.a) {
-      if (nodo->izquierda && rango.a <= nodo->izquierda->maxB) {
+    if (rango.a <= nodo->rango.a) {
+      if (nodo->izquierda && rango.a <= nodo->izquierda->maxB)
         nodo = nodo->izquierda;
-      } else {
+      else
         return RANGO_INEXISTENTE;
-      }
     } else {
-      if (nodo->derecha && rango.a <= nodo->derecha->maxB) {
+      if (nodo->derecha && rango.a <= nodo->derecha->maxB)
         nodo = nodo->derecha;
-      } else {
+      else
         return RANGO_INEXISTENTE;
-      }
     }
   }
 
@@ -414,13 +399,14 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
 }
 
 int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo) {
-  if(nodo == NULL) return 0;
-
-  if(nodo->derecha && nodo->izquierda) {
+  if (nodo == NULL || (nodo->derecha == NULL && nodo->izquierda == NULL))
+    return 0;
+  else if (nodo->derecha && nodo->izquierda)
     return nodo->derecha->alto - nodo->izquierda->alto;
-  } else if(nodo->derecha) {
+  else if (nodo->derecha)
     return nodo->derecha->alto;
-  } else if(nodo->izquierda) {
+  else if (nodo->izquierda)
     return -nodo->izquierda->alto;
-  } else return 0;
+
+  assert(false);
 }

@@ -1,16 +1,16 @@
-#ifndef ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H
-#define ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H
+#ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_ARBOL_INTERVALOS_H
+#define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_ARBOL_INTERVALOS_H
 #include <limits.h>
 #include <stdbool.h>
 #include "rango.h"
 
-typedef struct _ArbolIntervalosNode {
+typedef struct ArbolIntervalosNode_ {
   Rango rango;
   int maxB;
   int alto;
 
-  struct _ArbolIntervalosNode* derecha;
-  struct _ArbolIntervalosNode* izquierda;
+  struct ArbolIntervalosNode_* derecha;
+  struct ArbolIntervalosNode_* izquierda;
 } ArbolIntervalosNode;
 
 typedef struct {
@@ -37,4 +37,4 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango);
 
 bool arbolintervalos_eliminar(ArbolIntervalos* arbol, Rango rango);
 
-#endif //ESTRUCTURA_DE_DATOS_I_2020_TP2_ARBOL_AVL_H
+#endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_ARBOL_INTERVALOS_H

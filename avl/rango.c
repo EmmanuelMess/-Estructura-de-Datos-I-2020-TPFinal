@@ -10,13 +10,11 @@ Rango rango_interseccion(Rango parteA, Rango parteB) {
 }
 
 void rango_resta(Rango parteA, Rango parteB, Rango *resultadoA, Rango *resultadoB) {
-  if(parteA.a < parteB.a) {
+  if(parteA.a < parteB.a)
     *resultadoA = (Rango) {.a = parteA.a, .b = min(parteA.b, parteB.a - 1)};
-  }
 
-  if(parteB.b < parteA.b) {
+  if(parteB.b < parteA.b)
     *resultadoB = (Rango) {.a = max(parteA.a, parteB.b + 1), .b = parteA.b};
-  }
 }
 
 Rango rango_union(Rango parteA, Rango parteB) {

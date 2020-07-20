@@ -3,7 +3,8 @@
 #include "arbol_intervalos.h"
 #include "deque.h"
 
-ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
+ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
+  ArbolIntervalos * arbolB) {
   ArbolIntervalos *base;
   ArbolIntervalos *aUnir;
 
@@ -35,10 +36,11 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalo
   return base;
 }
 
-ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
+ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
+  ArbolIntervalos * arbolB) {
   ArbolIntervalos * base = arbolintervalos_crear();
-  ArbolIntervalos *aRecorrer;
-  ArbolIntervalos *aIntersecar;
+  ArbolIntervalos * aRecorrer;
+  ArbolIntervalos * aIntersecar;
 
   if (arbolA->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
   if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolB);
@@ -63,9 +65,8 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIn
     Rango rangoBase = nodo->rango;
     Rango interseccion = arbolintervalos_intersectar(aIntersecar, rangoBase);
 
-    if(!inexistente(interseccion)) {
+    if(!inexistente(interseccion))
       arbolintervalos_insertar(base, rango_interseccion(rangoBase, interseccion));
-    }
   }
 
   deque_destruir(deque);
@@ -100,9 +101,7 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
 
       if(!inexistente(resultadoA)) arbolintervalos_insertar(base, resultadoA);
       if(!inexistente(resultadoB)) arbolintervalos_insertar(base, resultadoB);
-    } else{
-      arbolintervalos_insertar(base, rangoBase);
-    }
+    } else arbolintervalos_insertar(base, rangoBase);
   }
 
   deque_destruir(deque);
@@ -137,9 +136,7 @@ ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
 
       if(!inexistente(resultadoA)) arbolintervalos_insertar(base, resultadoA);
       if(!inexistente(resultadoB)) arbolintervalos_insertar(base, resultadoB);
-    } else{
-      arbolintervalos_insertar(base, rangoBase);
-    }
+    } else arbolintervalos_insertar(base, rangoBase);
   }
 
   deque_destruir(deque);

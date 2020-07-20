@@ -1,5 +1,5 @@
-#ifndef ESTRUCTURA_DE_DATOS_I_2020_TP2_DEQUE_H
-#define ESTRUCTURA_DE_DATOS_I_2020_TP2_DEQUE_H
+#ifndef ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_DEQUE_H
+#define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_DEQUE_H
 
 #include <malloc.h>
 #include "arbol_intervalos.h"
@@ -30,6 +30,6 @@ void * deque_pop_front(Deque* deque);
 
 void * deque_pop_back(Deque* deque);
 
-int deque_largo(Deque *deque);
+int deque_imprimir(Deque *deque);
 
-#endif //ESTRUCTURA_DE_DATOS_I_2020_TP2_DEQUE_H
+#endif //ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_DEQUE_H

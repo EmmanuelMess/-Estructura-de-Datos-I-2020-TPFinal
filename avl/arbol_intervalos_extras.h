@@ -3,11 +3,14 @@
 
 #include "arbol_intervalos.h"
 
-ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
+ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
+  ArbolIntervalos * arbolB);
 
-ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
+ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
+  ArbolIntervalos * arbolB);
 
-ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB);
+ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA,
+  ArbolIntervalos * arbolB);
 
 ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos * arbol);
 
