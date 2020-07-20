@@ -2,9 +2,6 @@
 #include <stdio.h>
 #include <locale.h>
 #include <wchar.h>
-
-#define DEBUG true
-
 #include "trie/trie.h"
 #include "parseador.h"
 #include "avl/deque.h"
