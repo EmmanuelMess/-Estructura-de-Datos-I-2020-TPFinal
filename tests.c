@@ -194,6 +194,4 @@ void main_tests() {
   assert(!inexistente(arbolintervalos_intersectar(resultado, (Rango) {.a = 11, .b = INT_MAX})));
 
   trie_destruir(trie);
-
-
 }

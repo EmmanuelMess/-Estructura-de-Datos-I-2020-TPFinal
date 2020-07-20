@@ -1,3 +1,4 @@
+#include <wchar.h>
 #include "deque.h"
 
 Deque *deque_crear() {
@@ -72,12 +73,38 @@ void deque_push_front(Deque *deque, void *elemento) {
 
 int deque_largo(Deque *deque) {
   if(deque->primerNodo == NULL) {
+    wprintf(L"Vacio\n");
     return 0;
   }
 
-  int resultado = 1;
   for(DequeNode* inicio = deque->primerNodo; inicio != deque->ultimoNodo; inicio = inicio->siguente) {
-    resultado++;
+    ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) inicio->arbolAvl);
+    if(nodo == NULL) {
+      wprintf(L"NULL");
+      continue;
+    }
+
+    wprintf(
+      L" {m: %d, r: [%d, %d], a: %d}",
+      nodo->maxB,
+      nodo->rango.a,
+      nodo->rango.b,
+      nodo->alto
+    );
   }
-  return resultado;
+
+  ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) deque->ultimoNodo->arbolAvl);
+
+  if(nodo != NULL)
+    wprintf(
+      L" {m: %d, r: [%d, %d], a: %d}",
+      nodo->maxB,
+      nodo->rango.a,
+      nodo->rango.b,
+      nodo->alto
+    );
+ else       wprintf(L"NULL");
+
+  wprintf(L"\n");
+  return 0;
 }

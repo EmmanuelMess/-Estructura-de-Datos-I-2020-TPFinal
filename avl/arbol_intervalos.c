@@ -235,6 +235,44 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   return true;
 }
 
+struct NodoAEliminar {
+  ArbolIntervalosNode **posicionDelNodoAEliminar;
+  ArbolIntervalosNode *nodoAEliminar;
+};
+
+bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolIntervalos *arbol, Rango rango) {
+  if(arbol->arbolAvlNode == NULL) {
+    return false;
+  }
+
+  ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
+
+  while (*pos != NULL) {
+    deque_push_front(dequeDireccion, pos);
+
+    ArbolIntervalosNode *chequear = *pos;
+
+    if (rango.a < chequear->rango.a
+        || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
+      pos = &((*pos)->izquierda);
+    } else if (chequear->rango.a < rango.a
+               || (chequear->rango.a == rango.a &&
+                   chequear->rango.b < rango.b)) {
+      pos = &((*pos)->derecha);
+    } else if (rango.a == (*pos)->rango.a && rango.b == (*pos)->rango.b) {
+      x->nodoAEliminar = *pos;
+      x->posicionDelNodoAEliminar = pos;
+      return true;
+    } else {
+      deque_destruir(dequeDireccion);
+      return false;
+    }
+  }
+
+  return true;
+}
+
+
 bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   if(arbol->arbolAvlNode == NULL) {
     return false;
@@ -242,34 +280,12 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 
   Deque *dequeDireccion = deque_crear();
 
-  ArbolIntervalosNode **posicionDelNodoAEliminar;
-  ArbolIntervalosNode *nodoAEliminar;
+  struct NodoAEliminar aEliminar;
 
-  {//Rastreo del nodo a eliminar
-    ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
+  rastrear_nodo(&aEliminar, dequeDireccion, arbol, rango);
 
-    while (*pos != NULL) {
-      deque_push_front(dequeDireccion, pos);
-
-      ArbolIntervalosNode *chequear = *pos;
-
-      if (rango.a < chequear->rango.a
-          || (chequear->rango.a == rango.a && rango.b < chequear->rango.b)) {
-        pos = &((*pos)->izquierda);
-      } else if (chequear->rango.a < rango.a
-                 || (chequear->rango.a == rango.a &&
-                     chequear->rango.b < rango.b)) {
-        pos = &((*pos)->derecha);
-      } else if (rango.a == (*pos)->rango.a && rango.b == (*pos)->rango.b) {
-        nodoAEliminar = *pos;
-        posicionDelNodoAEliminar = pos;
-        *pos = NULL;
-      } else {
-        deque_destruir(dequeDireccion);
-        return false;
-      }
-    }
-  }
+  ArbolIntervalosNode ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
+  ArbolIntervalosNode *nodoAEliminar = aEliminar.nodoAEliminar;
 
   {//Rastreo del nodo que lo reemplaza
     if (nodoAEliminar->izquierda != NULL && nodoAEliminar->derecha != NULL) {
@@ -288,38 +304,22 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
         deque_push_front(dequeDireccion, posicionDelNodoSacado);
       }
 
-      if(*posicionDelNodoSacado == NULL) {
-        posicionDelNodoSacado = deque_pop_front(dequeDireccion);
-      } else {
-        deque_pop_front(dequeDireccion);
-      }
+      nodoAEliminar->rango = nuevoHijo->rango;
+      nodoAEliminar->alto = nuevoHijo->alto;
+      nodoAEliminar->maxB = nuevoHijo->maxB;
 
       *posicionDelNodoSacado = nuevoHijo->derecha;
 
-      if(nodoAEliminar->izquierda == nuevoHijo) nuevoHijo->izquierda = NULL;
-      else if(nodoAEliminar->derecha == nuevoHijo) nuevoHijo->derecha = NULL;
-      else {
-        nuevoHijo->izquierda = nodoAEliminar->izquierda;
-        nuevoHijo->derecha = nodoAEliminar->derecha;
-      }
-
-      *posicionDelNodoAEliminar = nuevoHijo;
+      nodoAEliminar = nuevoHijo;
     } else if (nodoAEliminar->izquierda != NULL) {
       *posicionDelNodoAEliminar = nodoAEliminar->izquierda;
-      if (!deque_vacio(dequeDireccion)) {
-        deque_pop_front(dequeDireccion);
-      }
     } else if (nodoAEliminar->derecha != NULL) {
       *posicionDelNodoAEliminar = nodoAEliminar->derecha;
-      if (!deque_vacio(dequeDireccion)) {
-        deque_pop_front(dequeDireccion);
-      }
     } else {
       *posicionDelNodoAEliminar = NULL;
-      if (!deque_vacio(dequeDireccion)) {
-        deque_pop_front(dequeDireccion);
-      }
     }
+
+    deque_pop_front(dequeDireccion);
 
     free(nodoAEliminar);
   }
