@@ -365,7 +365,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
   deque_push_front(deque, arbol->arbolAvlNode);
   nodosEnDeque++;
 
-  int i = 0;
+  unsigned int i = 0;
   for (; nodosEnDeque > 0; i++) {
     ArbolIntervalosNode* nodo = deque_pop_back(deque);
 
