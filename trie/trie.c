@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <assert.h>
 #include "trie.h"
 #include "mapa.h"
 
@@ -9,12 +10,12 @@ Trie* trie_crear() {
 }
 
 void trie_destruir(Trie* trie) {
-  if(trie->conjunto != NULL) {
+  if(trie->conjunto != NULL)
     arbolintervalos_destruir(trie->conjunto);
-  }
-  if(trie->mapa != NULL) {
+
+  if(trie->mapa != NULL)
     mapa_destruir(trie->mapa);
-  }
+
   free(trie);
 }
 

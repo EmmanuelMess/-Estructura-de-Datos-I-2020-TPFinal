@@ -7,11 +7,9 @@ Mapa* mapa_crear() {
 }
 
 void mapa_destruir(Mapa* mapa) {
-  for (int i = 0; i < CANTIDAD_LETRAS; ++i) {
-    if(mapa->elementos[i] != NULL) {
+  for (int i = 0; i < CANTIDAD_LETRAS; i++)
+    if(mapa->elementos[i] != NULL)
       trie_destruir(mapa->elementos[i]);
-    }
-  }
   free(mapa);
 }
 

@@ -5,8 +5,8 @@
 #include "mapa.h"
 #include "../avl/arbol_intervalos.h"
 
-typedef struct _Trie {
-  struct _Mapa* mapa;
+typedef struct Trie_ {
+  struct Mapa_* mapa;
   bool esFinal;
   ArbolIntervalos* conjunto;
 } Trie;
