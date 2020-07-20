@@ -3,11 +3,12 @@
 #include <locale.h>
 #include <wchar.h>
 
+#define DEBUG true
+
 #include "trie/trie.h"
 #include "parseador.h"
 #include "avl/deque.h"
 #include "avl/arbol_intervalos_extras.h"
-
 #include "debug.h"
 
 wchar_t* max_puntero(wchar_t* a, wchar_t* b) {
@@ -48,7 +49,6 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
 }
 
 int main(int argc, char *argv[]) {
-
   debug_main(argc, argv);
 
   if(fwide (stdout, 1) <= 0)

@@ -1,7 +1,6 @@
 #include "tests.h"
 #include <assert.h>
 #include <malloc.h>
-#include "tests.h"
 #include "avl/arbol_intervalos_extras.h"
 #include "avl/arbol_intervalos.h"
 #include "trie/trie.h"

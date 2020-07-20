@@ -414,9 +414,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
 }
 
 int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo) {
-  if(nodo == NULL) {
-    return 0;
-  }
+  if(nodo == NULL) return 0;
 
   if(nodo->derecha && nodo->izquierda) {
     return nodo->derecha->alto - nodo->izquierda->alto;
@@ -424,7 +422,5 @@ int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo) {
     return nodo->derecha->alto;
   } else if(nodo->izquierda) {
     return -nodo->izquierda->alto;
-  } else {
-    return 0;
-  }
+  } else return 0;
 }

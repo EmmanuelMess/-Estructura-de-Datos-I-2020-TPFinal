@@ -2,6 +2,7 @@
 #define ESTRUCTURA_DE_DATOS_I_2020_TPFINAL_DEBUG_H
 
 #include <stddef.h>
+#include <string.h>
 #include <stdlib.h>
 
 #include "avl/arbol_intervalos.h"
@@ -19,8 +20,8 @@
 void debug_main(int argc, char *argv[]) {
 #if DEBUG
   if (argc == 2) {
-    main_tests();
-
+    if(strcmp(argv[1], "-t") == 0)
+      main_tests();
     exit(0);
   }
 #endif
