@@ -57,19 +57,37 @@ void complemento_en_trie(Trie * trie, wchar_t * alias, wchar_t * aliasA) {
 }
 
 void uniones_tests_completo() {
-  ArbolIntervalos * arbol = arbolintervalos_crear();
+  ArbolIntervalos * arbolPares = arbolintervalos_crear();
 
-  for (int i = -1000; i < 1000; i += 2) {
+  for (int i = -1000; i <= 1000; i += 2) {
     ArbolIntervalos * arbol1 = crear_arbol_elemento(i);
-    ArbolIntervalos * tmp = arbolintervalos_union(arbol, arbol1);
-    arbolintervalos_destruir(arbol);
+    ArbolIntervalos * tmp = arbolintervalos_union(arbolPares, arbol1);
+    arbolintervalos_destruir(arbolPares);
     arbolintervalos_destruir(arbol1);
-    arbol = tmp;
+    arbolPares = tmp;
   }
 
-  arbolintervalos_destruir(arbol);
-}
+  ArbolIntervalos * arbolImpares = arbolintervalos_crear();
 
+  for (int i = -999; i <= 1000; i += 2) {
+    ArbolIntervalos * arbol1 = crear_arbol_elemento(i);
+    ArbolIntervalos * tmp = arbolintervalos_union(arbolImpares, arbol1);
+    arbolintervalos_destruir(arbolImpares);
+    arbolintervalos_destruir(arbol1);
+    arbolImpares = tmp;
+  }
+
+  ArbolIntervalos * todo = arbolintervalos_union(arbolImpares, arbolPares);
+  arbolintervalos_destruir(arbolPares);
+  arbolintervalos_destruir(arbolImpares);
+
+  assert(todo->arbolAvlNode->rango.a == -1000);
+  assert(todo->arbolAvlNode->rango.b == 1000);
+  assert(todo->arbolAvlNode->derecha == NULL);
+  assert(todo->arbolAvlNode->izquierda == NULL);
+
+  arbolintervalos_destruir(todo);
+}
 
 void uniones_tests() {
   ArbolIntervalos * arbol1 = crear_arbol_elemento(15);

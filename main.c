@@ -48,6 +48,7 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
 }
 
 int main(int argc, char *argv[]) {
+
   debug_main(argc, argv);
 
   if(fwide (stdout, 1) <= 0)
