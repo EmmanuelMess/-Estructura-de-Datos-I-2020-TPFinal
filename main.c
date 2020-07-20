@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <locale.h>
 #include <wchar.h>
+#include <assert.h>
 #include "trie/trie.h"
 #include "parseador.h"
 #include "avl/deque.h"
@@ -110,7 +111,7 @@ int main(int argc, char *argv[]) {
             resultado = arbolintervalos_interseccion(arbolA, arbolB);
           else if (metadatos.resta)
             resultado = arbolintervalos_resta(arbolA, arbolB);
-
+          else assert(false);
 
           if (trie_obtener(trie, alias) != NULL)
             arbolintervalos_destruir(trie_obtener(trie, alias));

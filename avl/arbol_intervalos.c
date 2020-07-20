@@ -260,7 +260,7 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
     }
   }
 
-  return true;
+  return false;
 }
 
 
@@ -272,7 +272,12 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 
   struct NodoAEliminar aEliminar;
 
-  rastrear_nodo(&aEliminar, dequeDireccion, arbol, rango);
+  bool resultado = rastrear_nodo(&aEliminar, dequeDireccion, arbol, rango);
+
+  if(!resultado) {
+    deque_destruir(dequeDireccion);
+    return false;
+  }
 
   ArbolIntervalosNode ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
   ArbolIntervalosNode * nodoAEliminar = aEliminar.nodoAEliminar;
