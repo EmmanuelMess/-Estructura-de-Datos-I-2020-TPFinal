@@ -138,9 +138,8 @@ Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
 Metadatos chequeador(wchar_t * entrada) {
   const wchar_t * ordenSalir = L"salir";
   if(wcsncmp(ordenSalir, entrada, wcslen(ordenSalir)) == 0) {
-    if (wcslen(entrada) != wcslen(ordenSalir)) {
+    if (wcslen(entrada) != wcslen(ordenSalir))
       return METADATOS_ERROR_GENERAL(entrada);
-    }
 
     Metadatos metadatos = { 0 };
     metadatos.salir = true;
@@ -149,9 +148,8 @@ Metadatos chequeador(wchar_t * entrada) {
 
   const wchar_t * ordenImprimir = L"imprimir";
   if(wcsncmp(ordenImprimir, entrada, wcslen(ordenImprimir)) == 0) {
-    if (wcslen(entrada) == wcslen(ordenImprimir)) {
+    if (wcslen(entrada) == wcslen(ordenImprimir))
       return METADATOS_ERROR_ARG_IMPRIMIR(entrada);
-    }
 
     Metadatos metadatos = { 0 };
     metadatos.imprimir = true;
@@ -181,9 +179,7 @@ void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t* alias,
 
   entrada += metadatos.largoAlias;
 
-  while(*entrada != '{') {
-    entrada++;
-  }
+  while(*entrada != '{')entrada++;
 
   int indiceEnteros = 0;
 

@@ -27,12 +27,11 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
   while (!deque_vacio(deque)) {
     ArbolIntervalosNode *nodo = deque_pop_front(deque);
 
-    if (nodo->izquierda) {
+    if (nodo->izquierda)
       deque_push_front(deque, nodo->izquierda);
-    }
-    if (nodo->derecha) {
+
+    if (nodo->derecha)
       deque_push_front(deque, nodo->derecha);
-    }
 
     if(nodo->rango.a == nodo->rango.b) wprintf(L"%d", nodo->rango.a);
     else wprintf(L"%d:%d", nodo->rango.a, nodo->rango.b);
@@ -48,13 +47,16 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
 int main(int argc, char *argv[]) {
   debug_main(argc, argv);
 
-  if(fwide (stdout, 1) <= 0)
-    puts("No se pudo crear la salida correctamente, es posible que no ande el imprimir\n");
+  if (fwide(stdout, 1) <= 0)
+    puts(
+      "No se pudo crear la salida correctamente, es posible que no ande el imprimir\n");
 
-  char * locale = "es_ES.utf8";
+  char *locale = "es_ES.utf8";
 
-  if(setlocale(LC_ALL, locale) == NULL)
-    wprintf(L"Error: no tiene el locale %s instalado, tildes y otros no van a funcionar\n", locale);
+  if (setlocale(LC_ALL, locale) == NULL)
+    wprintf(
+      L"Error: no tiene el locale %s instalado, tildes y otros no van a funcionar\n",
+      locale);
 
 
   Trie *trie = trie_crear();
@@ -73,22 +75,22 @@ int main(int argc, char *argv[]) {
 
       if (metadatos.error) {
         wprintf(L"Error de parseo: %.5ls\n",
-               max_puntero(entrada, metadatos.posError - 2));
+                max_puntero(entrada, metadatos.posError - 2));
 
-        if (metadatos.error == METADATOS_ERROR_ARG_IMPRIMIR_NUM) {
+        if (metadatos.error == METADATOS_ERROR_ARG_IMPRIMIR_NUM)
           wprintf(L"Uso: imprimir <alias>!\n");
-        }
 
         sigue = true;
-      } else if (metadatos.salir) {
+      } else if (metadatos.salir)
         sigue = false;
-      } else if (metadatos.imprimir) {
+      else if (metadatos.imprimir) {
         wchar_t *alias = entrada + wcslen(L"imprimir");
         ArbolIntervalos *arbol = trie_obtener(trie, alias);
 
         imprimir_intervalos(arbol);
         debug0(arbol);
-      } else if (metadatos.union_ || metadatos.interseccion || metadatos.resta) {
+      } else if (metadatos.union_ || metadatos.interseccion ||
+                 metadatos.resta) {
         wchar_t alias[metadatos.largoAlias + 1];
         wchar_t aliasA[metadatos.largoOperando1 + 1];
         wchar_t aliasB[metadatos.largoOperando2 + 1];
@@ -97,9 +99,9 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbolA = trie_obtener(trie, aliasA);
         ArbolIntervalos *arbolB = trie_obtener(trie, aliasB);
 
-        if(arbolA == NULL || arbolB == NULL) {
-          if(arbolA == NULL) wprintf(L"Alias no existe: %s\n", aliasA);
-          if(arbolB == NULL) wprintf(L"Alias no existe: %s\n", aliasB);
+        if (arbolA == NULL || arbolB == NULL) {
+          if (arbolA == NULL) wprintf(L"Alias no existe: %s\n", aliasA);
+          if (arbolB == NULL) wprintf(L"Alias no existe: %s\n", aliasB);
         } else {
           ArbolIntervalos *resultado;
           if (metadatos.union_)
@@ -122,12 +124,12 @@ int main(int argc, char *argv[]) {
 
         ArbolIntervalos *arbol = trie_obtener(trie, aliasA);
 
-        if(arbol == NULL) {
+        if (arbol == NULL) {
           wprintf(L"Alias no existe: %s\n", aliasA);
         } else {
           ArbolIntervalos *resultado = arbolintervalos_complemento(arbol);
 
-          if(trie_obtener(trie, alias) != NULL)
+          if (trie_obtener(trie, alias) != NULL)
             arbolintervalos_destruir(trie_obtener(trie, alias));
 
           trie_agregar(trie, alias, resultado);
@@ -137,13 +139,13 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbol = arbolintervalos_crear();
 
         if (metadatos.esExtension) {
-          int enteros[metadatos.largo+1];//std C no permite arrays automaticos de largo 0
+          int enteros[metadatos.largo +
+                      1];//std C no permite arrays automaticos de largo 0
           procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
 
-          for (int i = 0; i < metadatos.largo; ++i) {
+          for (int i = 0; i < metadatos.largo; ++i)
             arbolintervalos_insertar(arbol,
                                      (Rango) {.a = enteros[i], .b = enteros[i]});
-          }
 
           debug1(alias, metadatos, enteros);
         } else {
