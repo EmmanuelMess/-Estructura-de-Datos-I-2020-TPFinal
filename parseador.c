@@ -187,7 +187,8 @@ Metadatos chequeador(wchar_t * entrada) {
   else return METADATOS_ERROR_GENERAL(entrada);
 }
 
-void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t* alias, int* enteros, Rango * rango) {
+void procesar_asignacion_extension(Metadatos metadatos, wchar_t *entrada,
+                                   wchar_t *alias, int *enteros) {
   wcsncpy(alias, entrada, metadatos.largoAlias);
   alias[metadatos.largoAlias] = '\0';
 
@@ -197,17 +198,25 @@ void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t* alias,
 
   int indiceEnteros = 0;
 
-  if(metadatos.esExtension) {
-    while (*entrada != '}') {
-      entrada++;
-      enteros[indiceEnteros++] = wcstol(entrada, &entrada, 10);
-    }
-  } else {
-    entrada += strlen("{") + metadatos.largoAliasInterno + strlen(":");
-    rango->a = wcstol(entrada, &entrada, 10);
-    entrada += strlen("<=") + metadatos.largoAliasInterno + strlen("<=");
-    rango->b = wcstol(entrada, &entrada, 10);
+  while (*entrada != '}') {
+    entrada++;
+    enteros[indiceEnteros++] = wcstol(entrada, &entrada, 10);
   }
+}
+
+void procesar_asignacion_compresion(Metadatos metadatos, wchar_t *entrada,
+                                    wchar_t *alias, Rango *rango) {
+  wcsncpy(alias, entrada, metadatos.largoAlias);
+  alias[metadatos.largoAlias] = '\0';
+
+  entrada += metadatos.largoAlias;
+
+  while (*entrada != '{') entrada++;
+
+  entrada += strlen("{") + metadatos.largoAliasInterno + strlen(":");
+  rango->a = wcstol(entrada, &entrada, 10);
+  entrada += strlen("<=") + metadatos.largoAliasInterno + strlen("<=");
+  rango->b = wcstol(entrada, &entrada, 10);
 }
 
 void procesar_operacion(Metadatos metadatos, wchar_t *entrada, wchar_t* alias,

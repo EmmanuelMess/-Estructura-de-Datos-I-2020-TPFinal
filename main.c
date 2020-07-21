@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
         if (metadatos.esExtension) {
           int enteros[metadatos.largo +
                       1];//std C no permite arrays automaticos de largo 0
-          procesar_asignacion(metadatos, entrada, alias, enteros, NULL);
+          procesar_asignacion_extension(metadatos, entrada, alias, enteros);
 
           for (int i = 0; i < metadatos.largo; ++i)
             arbolintervalos_insertar(arbol,
@@ -153,7 +153,7 @@ int main(int argc, char *argv[]) {
         } else {
           Rango rango;
 
-          procesar_asignacion(metadatos, entrada, alias, NULL, &rango);
+          procesar_asignacion_compresion(metadatos, entrada, alias, &rango);
 
           arbolintervalos_insertar(arbol, rango);
 

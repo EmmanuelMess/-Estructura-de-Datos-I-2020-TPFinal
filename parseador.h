@@ -44,8 +44,11 @@ void remover_espacios(wchar_t * entrada);
 
 Metadatos chequeador(wchar_t * entrada);
 
-void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t * alias,
-  int* enteros, Rango * rango);
+void procesar_asignacion_extension(Metadatos metadatos, wchar_t *entrada,
+                                   wchar_t *alias, int *enteros);
+
+void procesar_asignacion_compresion(Metadatos metadatos, wchar_t *entrada,
+                                    wchar_t *alias, Rango *rango);
 
 void procesar_operacion(Metadatos metadatos, wchar_t* entrada, wchar_t * alias,
                         wchar_t aliasA[], wchar_t aliasB[]);
