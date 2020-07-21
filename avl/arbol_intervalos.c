@@ -34,29 +34,21 @@ ArbolIntervalos *arbolintervalos_crear() {
   return avl;
 }
 
+ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
+  if(original == NULL)
+    return NULL;
+
+  ArbolIntervalosNode * copia = malloc(sizeof(ArbolIntervalosNode));
+  memcpy(copia, original, sizeof(ArbolIntervalosNode));
+  copia->izquierda = copiar(original->izquierda);
+  copia->derecha = copiar(original->derecha);
+
+  return copia;
+}
+
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   ArbolIntervalos * copia = arbolintervalos_crear();
-
-  if(arbol->arbolAvlNode == NULL)
-    return copia;
-
-  Deque* deque = deque_crear();
-  deque_push_front(deque, arbol->arbolAvlNode);
-
-  while (!deque_vacio(deque)) {
-    ArbolIntervalosNode* nodo = deque_pop_front(deque);
-
-    if(nodo->izquierda)
-      deque_push_front(deque, nodo->izquierda);
-
-    if(nodo->derecha)
-      deque_push_front(deque, nodo->derecha);
-
-    arbolintervalos_insertar(copia, nodo->rango);
-  }
-
-  deque_destruir(deque);
-
+  copia->arbolAvlNode = copiar(arbol->arbolAvlNode);
   return copia;
 }
 
