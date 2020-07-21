@@ -36,7 +36,7 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
 
   if(*entrada == '}' || es_numero(entrada))
     metadatos.esExtension = true;
-  else if(*entrada == 'x')
+  else if(isalnum(*entrada))
     metadatos.esExtension = false;
   else return METADATOS_ERROR_GENERAL(entrada);
 
@@ -64,17 +64,31 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
     return metadatos;
   }
 
-  entrada++;
+  wchar_t * inicioAliasInterno = entrada;
+
+  while(iswalnum(*entrada)) {
+    metadatos.largoAliasInterno++;
+    entrada++;
+  }
 
   if(*entrada != ':') return METADATOS_ERROR_GENERAL(entrada);
   else entrada++;
 
   while (es_numero(entrada)) entrada++;
 
-  int len = strlen("<=x<=");
+  int largoMenorOIgual = strlen("<=");
 
-  if(wcsncmp(entrada, L"<=x<=", len) != 0) return METADATOS_ERROR_GENERAL(entrada);
-  else entrada += len;
+  if(wcsncmp(entrada, L"<=", largoMenorOIgual) != 0)
+    return METADATOS_ERROR_GENERAL(entrada);
+  else entrada += largoMenorOIgual;
+
+  if(wcsncmp(entrada, inicioAliasInterno, metadatos.largoAliasInterno) != 0)
+    return METADATOS_ERROR_GENERAL(entrada);
+  else entrada += metadatos.largoAliasInterno;
+
+  if(wcsncmp(entrada, L"<=", largoMenorOIgual) != 0)
+    return METADATOS_ERROR_GENERAL(entrada);
+  else entrada += largoMenorOIgual;
 
   while (es_numero(entrada)) entrada++;
 
@@ -189,9 +203,9 @@ void procesar_asignacion(Metadatos metadatos, wchar_t * entrada, wchar_t* alias,
       enteros[indiceEnteros++] = wcstol(entrada, &entrada, 10);
     }
   } else {
-    entrada += strlen("{x:");
+    entrada += strlen("{") + metadatos.largoAliasInterno + strlen(":");
     rango->a = wcstol(entrada, &entrada, 10);
-    entrada += strlen("<=x<=");
+    entrada += strlen("<=") + metadatos.largoAliasInterno + strlen("<=");
     rango->b = wcstol(entrada, &entrada, 10);
   }
 }

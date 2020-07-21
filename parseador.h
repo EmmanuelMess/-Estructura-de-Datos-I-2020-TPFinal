@@ -11,6 +11,7 @@ typedef struct {
   //parseo de asignacion
   int largoAlias;
   bool esExtension;
+  int largoAliasInterno;
   int largo;
 
   //ordenes
