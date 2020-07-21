@@ -15,7 +15,6 @@ typedef struct ArbolIntervalosNode_ {
 
 typedef struct {
   ArbolIntervalosNode* arbolAvlNode;
-  bool esCopia;
 } ArbolIntervalos;
 
 typedef void Accion(ArbolIntervalosNode*);

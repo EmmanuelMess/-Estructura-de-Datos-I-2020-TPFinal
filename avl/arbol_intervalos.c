@@ -48,16 +48,12 @@ ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
 
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   ArbolIntervalos * copia = arbolintervalos_crear();
-  if(arbol->arbolAvlNode == NULL) return copia;
-
-  copia->arbolAvlNode = arbol->arbolAvlNode;
-  copia->esCopia = true;
+  copia->arbolAvlNode = copiar(arbol->arbolAvlNode);
   return copia;
 }
 
 void arbolintervalos_destruir(ArbolIntervalos *tree) {
-  if(!tree->esCopia)
-    itree_recorrer_fs(tree, (Accion*) free, (Popper*) deque_pop_back);
+  itree_recorrer_fs(tree, (Accion*) free, (Popper*) deque_pop_back);
   free(tree);
 }
 
@@ -164,18 +160,9 @@ void rebalancear(
   }
 }
 
-void asegurar_no_es_copia(ArbolIntervalos *arbol) {
-  if(arbol->esCopia) {
-    arbol->arbolAvlNode = copiar(arbol->arbolAvlNode);
-    arbol->esCopia = false;
-  }
-}
-
 bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango))
     return false;
-
-  asegurar_no_es_copia(arbol);
 
   Rango rangoExtendido = {
     .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
@@ -272,8 +259,6 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
 bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   if(arbol->arbolAvlNode == NULL)
     return false;
-
-  asegurar_no_es_copia(arbol);
 
   Deque *dequeDireccion = deque_crear();
 
