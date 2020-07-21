@@ -58,7 +58,8 @@ int main(int argc, char *argv[]) {
     wprintf(
       L"Error: no tiene el locale %s instalado, tildes y otros no van a funcionar\n",
       locale);
-
+  else
+    wprintf(L"Pruebe tildes y eñes!\n");
 
   Trie *trie = trie_crear();
   bool sigue = true;
