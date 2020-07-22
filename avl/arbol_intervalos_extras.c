@@ -2,6 +2,7 @@
 #include "arbol_intervalos_extras.h"
 #include "arbol_intervalos.h"
 #include "deque.h"
+#include "deque_rango.h"
 
 ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
   ArbolIntervalos * arbolB) {
@@ -62,11 +63,31 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
 
-    Rango rangoBase = nodo->rango;
-    Rango interseccion = arbolintervalos_intersectar(aIntersecar, rangoBase);
 
-    if(!inexistente(interseccion))
-      arbolintervalos_insertar(base, rango_interseccion(rangoBase, interseccion));
+    DequeRango *dequeRangos = dequerango_crear();
+
+    dequerango_push_front(dequeRangos, nodo->rango);
+
+    while (!dequerango_vacio(dequeRangos)) {
+      Rango rangoBase = dequerango_pop_front(dequeRangos);
+      Rango interseccion = arbolintervalos_intersectar(aIntersecar, rangoBase);
+
+      if (!inexistente(interseccion)) {
+        arbolintervalos_insertar(base, rango_interseccion(rangoBase, interseccion));
+
+        Rango antes = RANGO_INEXISTENTE;
+        Rango despues = RANGO_INEXISTENTE;
+        rango_resta(rangoBase, interseccion, &antes, &despues);
+
+        if(!inexistente(antes))
+          dequerango_push_front(dequeRangos, antes);
+
+        if(!inexistente(despues))
+          dequerango_push_front(dequeRangos, despues);
+      }
+    }
+
+    dequerango_destruir(dequeRangos);
   }
 
   deque_destruir(deque);
