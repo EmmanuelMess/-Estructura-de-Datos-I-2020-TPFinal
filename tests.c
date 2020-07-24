@@ -141,19 +141,7 @@ void eliminar_tests() {
   arbolintervalos_destruir(arbol);
 }
 
-void main_tests() {
-  //basicos arbol
-  agregar_tests();
-  eliminar_tests();
-
-  //extras arbol
-  uniones_tests();
-  uniones_tests_completo();
-
-  //trie
-  test_trie();
-
-  //completo
+void test_arbol_trie() {
   ArbolIntervalos * arbol1 = crear_arbol_intervalo((Rango) {.a = 15, .b = 15});
   ArbolIntervalos * arbol2 = crear_arbol_intervalo((Rango) {.a = -5, .b = 0});
   ArbolIntervalos * arbol3 = crear_arbol_intervalo((Rango) {.a = 0, .b = 10});
@@ -188,4 +176,171 @@ void main_tests() {
   assert(!inexistente(arbolintervalos_intersectar(resultado, (Rango) {.a = 11, .b = INT_MAX})));
 
   trie_destruir(trie);
+}
+
+void test_propiedades() {
+  ArbolIntervalos * A = arbolintervalos_crear();
+  arbolintervalos_insertar(A, elem(0));
+  arbolintervalos_insertar(A, elem(1));
+  arbolintervalos_insertar(A, elem(2));
+  arbolintervalos_insertar(A, elem(3));
+  ArbolIntervalos * B = crear_arbol_intervalo((Rango) {.a = -3, .b = 5});
+  ArbolIntervalos * C = crear_arbol_intervalo((Rango) {.a = 3, .b = 7});
+
+  {//Colmutativa union
+    ArbolIntervalos * union1 = arbolintervalos_union(A, B);
+    ArbolIntervalos * union2 = arbolintervalos_union(B, A);
+
+    assert(union1->arbolAvlNode->rango.a == -3);
+    assert(union1->arbolAvlNode->rango.b == 5);
+
+    assert(union2->arbolAvlNode->rango.a == -3);
+    assert(union2->arbolAvlNode->rango.b == 5);
+
+    arbolintervalos_destruir(union1);
+    arbolintervalos_destruir(union2);
+  }
+
+  {//Colmutativa interseccion
+    ArbolIntervalos * interseccion1 = arbolintervalos_interseccion(A, B);
+
+    assert(interseccion1->arbolAvlNode->rango.a == 0);
+    assert(interseccion1->arbolAvlNode->rango.b == 3);
+
+    ArbolIntervalos * interseccion2 = arbolintervalos_interseccion(B, A);
+
+    assert(interseccion2->arbolAvlNode->rango.a == 0);
+    assert(interseccion2->arbolAvlNode->rango.b == 3);
+
+    arbolintervalos_destruir(interseccion1);
+    arbolintervalos_destruir(interseccion2);
+  }
+
+  {//Distributiva union
+    ArbolIntervalos * CA = arbolintervalos_union(C, A);
+    ArbolIntervalos * CB = arbolintervalos_union(C, B);
+    ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
+
+    ArbolIntervalos * CAiB = arbolintervalos_union(C, AiB);
+
+    assert(CAiB->arbolAvlNode->rango.a == 0);
+    assert(CAiB->arbolAvlNode->rango.b == 7);
+
+    ArbolIntervalos * CAiCB = arbolintervalos_interseccion(CA, CB);
+
+    assert(CAiCB->arbolAvlNode->rango.a == 0);
+    assert(CAiCB->arbolAvlNode->rango.b == 7);
+
+    arbolintervalos_destruir(CA);
+    arbolintervalos_destruir(CB);
+    arbolintervalos_destruir(AiB);
+    arbolintervalos_destruir(CAiB);
+    arbolintervalos_destruir(CAiCB);
+  }
+
+  {//Distributiva interseccion
+    ArbolIntervalos * CiA = arbolintervalos_interseccion(C, A);
+    ArbolIntervalos * CiB = arbolintervalos_interseccion(C, B);
+    ArbolIntervalos * AB = arbolintervalos_union(A, B);
+
+    ArbolIntervalos * CiAB = arbolintervalos_interseccion(C, AB);
+
+    assert(CiAB->arbolAvlNode->rango.a == 3);
+    assert(CiAB->arbolAvlNode->rango.b == 5);
+
+    ArbolIntervalos * CiACiB = arbolintervalos_union(CiA, CiB);
+
+    assert(CiACiB->arbolAvlNode->rango.a == 3);
+    assert(CiACiB->arbolAvlNode->rango.b == 5);
+
+    arbolintervalos_destruir(CiA);
+    arbolintervalos_destruir(CiB);
+    arbolintervalos_destruir(AB);
+    arbolintervalos_destruir(CiAB);
+    arbolintervalos_destruir(CiACiB);
+  }
+
+  { //Interseccion como resta
+    ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
+
+    assert(AiB->arbolAvlNode->rango.a == 0);
+    assert(AiB->arbolAvlNode->rango.b == 3);
+
+    ArbolIntervalos * r1 = arbolintervalos_resta(A, B);
+    ArbolIntervalos * r2 = arbolintervalos_resta(A, r1);
+
+    assert(r2->arbolAvlNode->rango.a == 0);
+    assert(r2->arbolAvlNode->rango.b == 3);
+
+    arbolintervalos_destruir(AiB);
+    arbolintervalos_destruir(r1);
+    arbolintervalos_destruir(r2);
+  }
+
+  {//De Morgan union
+    ArbolIntervalos * cA = arbolintervalos_complemento(A);
+    ArbolIntervalos * cB = arbolintervalos_complemento(B);
+    ArbolIntervalos * cAcB = arbolintervalos_union(cA, cB);
+
+    assert(cAcB->arbolAvlNode->alto == 2);
+    assert(!inexistente(arbolintervalos_intersectar(cAcB, (Rango) {.a = INT_MIN, .b = -1})));
+    assert(!inexistente(arbolintervalos_intersectar(cAcB, (Rango) {.a = 4, .b = INT_MAX})));
+
+    ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
+    ArbolIntervalos * cAiB = arbolintervalos_complemento(AiB);
+
+    assert(cAiB->arbolAvlNode->alto == 2);
+    assert(!inexistente(arbolintervalos_intersectar(cAiB, (Rango) {.a = INT_MIN, .b = -1})));
+    assert(!inexistente(arbolintervalos_intersectar(cAiB, (Rango) {.a = 4, .b = INT_MAX})));
+
+    arbolintervalos_destruir(cA);
+    arbolintervalos_destruir(cB);
+    arbolintervalos_destruir(cAcB);
+    arbolintervalos_destruir(AiB);
+    arbolintervalos_destruir(cAiB);
+  }
+
+  {//De Morgan interseccion
+    ArbolIntervalos * cA = arbolintervalos_complemento(A);
+    ArbolIntervalos * cB = arbolintervalos_complemento(B);
+    ArbolIntervalos * cAicB = arbolintervalos_interseccion(cA, cB);
+
+    assert(cAicB->arbolAvlNode->alto == 2);
+    assert(!inexistente(arbolintervalos_intersectar(cAicB, (Rango) {.a = INT_MIN, .b = -4})));
+    assert(!inexistente(arbolintervalos_intersectar(cAicB, (Rango) {.a = 6, .b = INT_MAX})));
+
+    ArbolIntervalos * AB = arbolintervalos_union(A, B);
+    ArbolIntervalos * cAB = arbolintervalos_complemento(AB);
+
+    assert(cAB->arbolAvlNode->alto == 2);
+    assert(!inexistente(arbolintervalos_intersectar(cAB, (Rango) {.a = INT_MIN, .b = -4})));
+    assert(!inexistente(arbolintervalos_intersectar(cAB, (Rango) {.a = 6, .b = INT_MAX})));
+
+    arbolintervalos_destruir(cA);
+    arbolintervalos_destruir(cB);
+    arbolintervalos_destruir(cAicB);
+    arbolintervalos_destruir(AB);
+    arbolintervalos_destruir(cAB);
+  }
+
+  arbolintervalos_destruir(A);
+  arbolintervalos_destruir(B);
+  arbolintervalos_destruir(C);
+}
+
+void main_tests() {
+  //basicos arbol
+  agregar_tests();
+  eliminar_tests();
+
+  //avanzados arbol
+  uniones_tests();
+  uniones_tests_completo();
+  test_propiedades();
+
+  //trie
+  test_trie();
+
+  //completo
+  test_arbol_trie();
 }
