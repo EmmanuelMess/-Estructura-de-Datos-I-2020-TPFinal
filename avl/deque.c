@@ -22,7 +22,7 @@ bool deque_vacio(Deque *deque) {
 void * deque_pop_back(Deque *deque) {
   DequeNode *tmp = deque->ultimoNodo;
 
-  ArbolIntervalosNode *elemento = deque->ultimoNodo->arbolAvl;
+  ArbolIntervalosNode *elemento = deque->ultimoNodo->nodo;
   deque->ultimoNodo = deque->ultimoNodo->anterior;
 
   if (deque->ultimoNodo != NULL)
@@ -38,7 +38,7 @@ void * deque_pop_back(Deque *deque) {
 void * deque_pop_front(Deque *deque) {
   DequeNode *tmp = deque->primerNodo;
 
-  ArbolIntervalosNode *elemento = deque->primerNodo->arbolAvl;
+  ArbolIntervalosNode *elemento = deque->primerNodo->nodo;
   deque->primerNodo = deque->primerNodo->siguente;
 
   if (deque->primerNodo != NULL)
@@ -51,12 +51,12 @@ void * deque_pop_front(Deque *deque) {
 }
 
 void * deque_peek_front(Deque *deque) {
-  return deque->primerNodo->arbolAvl;
+  return deque->primerNodo->nodo;
 }
 
 void deque_push_front(Deque *deque, void *elemento) {
   DequeNode* node = calloc(1, sizeof(DequeNode));
-  node->arbolAvl = elemento;
+  node->nodo = elemento;
   node->siguente = deque->primerNodo;
   node->anterior = NULL;
 
@@ -77,7 +77,7 @@ int deque_imprimir(Deque *deque) {
 
   for(DequeNode* inicio = deque->primerNodo; inicio != deque->ultimoNodo;
   inicio = inicio->siguente) {
-    ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) inicio->arbolAvl);
+    ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) inicio->nodo);
     if (nodo == NULL)
       wprintf(L"NULL");
     else
@@ -90,7 +90,7 @@ int deque_imprimir(Deque *deque) {
       );
   }
 
-  ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) deque->ultimoNodo->arbolAvl);
+  ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) deque->ultimoNodo->nodo);
 
   if (nodo == NULL)
     wprintf(L"NULL");

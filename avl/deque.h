@@ -5,10 +5,10 @@
 #include "arbol_intervalos.h"
 
 //INICIO <-> <-> <-> FINAL
-typedef struct _DequeNode {
-  void* arbolAvl;
-  struct _DequeNode* siguente;
-  struct _DequeNode* anterior;
+typedef struct DequeNode_ {
+  void* nodo;//Puede ser un puntero a nodo o puntero a puntero a nodo
+  struct DequeNode_* siguente;
+  struct DequeNode_* anterior;
 } DequeNode;
 
 typedef struct {
