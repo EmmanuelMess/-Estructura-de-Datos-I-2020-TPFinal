@@ -4,15 +4,13 @@
 #include <stdbool.h>
 #include "rango.h"
 
-//INICIO <-> <-> <-> FINAL
-typedef struct StackRangoNode_ {
+typedef struct StackRangoNodo_ {
   Rango rango;
-  struct StackRangoNode_* siguente;
-  struct StackRangoNode_* anterior;
-} StackRangoNode;
+  struct StackRangoNodo_* siguente;
+} StackRangoNodo;
 
 typedef struct {
-  StackRangoNode* primerNodo;
+  StackRangoNodo* primerNodo;
 } StackRango;
 
 StackRango* stackrango_crear();

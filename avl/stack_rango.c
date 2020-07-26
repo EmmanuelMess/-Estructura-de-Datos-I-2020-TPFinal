@@ -8,7 +8,7 @@ StackRango *stackrango_crear() {
 
 void stackrango_destruir(StackRango *deque) {
   while (deque->primerNodo != NULL) {
-    StackRangoNode* siguente = deque->primerNodo->siguente;
+    StackRangoNodo* siguente = deque->primerNodo->siguente;
     free(deque->primerNodo);
     deque->primerNodo = siguente;
   }
@@ -21,28 +21,19 @@ bool stackrango_vacio(StackRango *deque) {
 }
 
 Rango stackrango_pop(StackRango *deque) {
-  StackRangoNode *tmp = deque->primerNodo;
+  StackRangoNodo *tmp = deque->primerNodo;
 
   Rango elemento = deque->primerNodo->rango;
   deque->primerNodo = deque->primerNodo->siguente;
-
-  if (deque->primerNodo != NULL)
-    deque->primerNodo->anterior = NULL;
 
   free(tmp);
   return elemento;
 }
 
 void stackrango_push(StackRango *deque, Rango elemento) {
-  StackRangoNode* node = calloc(1, sizeof(StackRangoNode));
+  StackRangoNodo* node = calloc(1, sizeof(StackRangoNodo));
   node->rango = elemento;
   node->siguente = deque->primerNodo;
-  node->anterior = NULL;
 
-  if(deque->primerNodo == NULL) {
-    deque->primerNodo = node;
-  } else {
-    deque->primerNodo->anterior = node;
-    deque->primerNodo = node;
-  }
+  deque->primerNodo = node;
 }
