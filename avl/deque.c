@@ -7,7 +7,7 @@ Deque *deque_crear() {
 
 void deque_destruir(Deque *deque) {
   while (deque->primerNodo != NULL) {
-    DequeNode* siguente = deque->primerNodo->siguente;
+    DequeNodo* siguente = deque->primerNodo->siguente;
     free(deque->primerNodo);
     deque->primerNodo = siguente;
   }
@@ -20,9 +20,9 @@ bool deque_vacio(Deque *deque) {
 }
 
 void * deque_pop_back(Deque *deque) {
-  DequeNode *tmp = deque->ultimoNodo;
+  DequeNodo *tmp = deque->ultimoNodo;
 
-  ArbolIntervalosNode *elemento = deque->ultimoNodo->nodo;
+  ArbolIntervalosNodo *elemento = deque->ultimoNodo->nodo;
   deque->ultimoNodo = deque->ultimoNodo->anterior;
 
   if (deque->ultimoNodo != NULL)
@@ -36,9 +36,9 @@ void * deque_pop_back(Deque *deque) {
 }
 
 void * deque_pop_front(Deque *deque) {
-  DequeNode *tmp = deque->primerNodo;
+  DequeNodo *tmp = deque->primerNodo;
 
-  ArbolIntervalosNode *elemento = deque->primerNodo->nodo;
+  ArbolIntervalosNodo *elemento = deque->primerNodo->nodo;
   deque->primerNodo = deque->primerNodo->siguente;
 
   if (deque->primerNodo != NULL)
@@ -51,7 +51,7 @@ void * deque_pop_front(Deque *deque) {
 }
 
 void deque_push_front(Deque *deque, void *elemento) {
-  DequeNode* node = calloc(1, sizeof(DequeNode));
+  DequeNodo* node = calloc(1, sizeof(DequeNodo));
   node->nodo = elemento;
   node->siguente = deque->primerNodo;
   node->anterior = NULL;
@@ -71,9 +71,9 @@ int deque_imprimir(Deque *deque) {
     return 0;
   }
 
-  for(DequeNode* inicio = deque->primerNodo; inicio != deque->ultimoNodo;
+  for(DequeNodo* inicio = deque->primerNodo; inicio != deque->ultimoNodo;
   inicio = inicio->siguente) {
-    ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) inicio->nodo);
+    ArbolIntervalosNodo *nodo = *((ArbolIntervalosNodo **) inicio->nodo);
     if (nodo == NULL)
       wprintf(L"NULL");
     else
@@ -86,7 +86,7 @@ int deque_imprimir(Deque *deque) {
       );
   }
 
-  ArbolIntervalosNode *nodo = *((ArbolIntervalosNode **) deque->ultimoNodo->nodo);
+  ArbolIntervalosNodo *nodo = *((ArbolIntervalosNodo **) deque->ultimoNodo->nodo);
 
   if (nodo == NULL)
     wprintf(L"NULL");

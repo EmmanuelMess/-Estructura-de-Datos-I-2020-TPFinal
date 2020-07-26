@@ -9,10 +9,10 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
   ArbolIntervalos *base;
   ArbolIntervalos *aUnir;
 
-  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolB);
-  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
+  if (arbolA->arbolAvlNodo == NULL) return arbolintervalos_copiar(arbolB);
+  if (arbolB->arbolAvlNodo == NULL) return arbolintervalos_copiar(arbolA);
 
-  if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
+  if (arbolA->arbolAvlNodo->alto > arbolB->arbolAvlNodo->alto) {
     base = arbolintervalos_copiar(arbolB);
     aUnir = arbolA;
   } else {
@@ -22,10 +22,10 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
 
   //DFS del arbol aUnir (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
-  deque_push_front(deque, aUnir->arbolAvlNode);
+  deque_push_front(deque, aUnir->arbolAvlNodo);
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNodo *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
@@ -44,10 +44,10 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
   ArbolIntervalos * aRecorrer;
   ArbolIntervalos * aIntersecar;
 
-  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
-  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolB);
+  if (arbolA->arbolAvlNodo == NULL) return arbolintervalos_copiar(arbolA);
+  if (arbolB->arbolAvlNodo == NULL) return arbolintervalos_copiar(arbolB);
 
-  if (arbolA->arbolAvlNode->alto > arbolB->arbolAvlNode->alto) {
+  if (arbolA->arbolAvlNodo->alto > arbolB->arbolAvlNodo->alto) {
     aRecorrer = arbolB;
     aIntersecar = arbolA;
   } else {
@@ -57,10 +57,10 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
 
   //DFS del arbol aRecorrer (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
-  deque_push_front(deque, aRecorrer->arbolAvlNode);
+  deque_push_front(deque, aRecorrer->arbolAvlNodo);
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNodo *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
@@ -98,17 +98,17 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
 }
 
 ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalos * arbolB) {
-  if (arbolA->arbolAvlNode == NULL) return arbolintervalos_crear();
-  if (arbolB->arbolAvlNode == NULL) return arbolintervalos_copiar(arbolA);
+  if (arbolA->arbolAvlNodo == NULL) return arbolintervalos_crear();
+  if (arbolB->arbolAvlNodo == NULL) return arbolintervalos_copiar(arbolA);
 
   ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
 
   //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
-  deque_push_front(deque, base->arbolAvlNode);
+  deque_push_front(deque, base->arbolAvlNodo);
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNodo *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
@@ -137,14 +137,14 @@ ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
   ArbolIntervalos * base = arbolintervalos_crear();
   arbolintervalos_insertar(base, (Rango){.a = INT_MIN, .b = INT_MAX});
 
-  if (arbol->arbolAvlNode == NULL) return base;
+  if (arbol->arbolAvlNodo == NULL) return base;
 
   //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
-  deque_push_front(deque, base->arbolAvlNode);
+  deque_push_front(deque, base->arbolAvlNodo);
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNodo *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);

@@ -14,14 +14,14 @@
 /**
  * Nodo interno del arbol, ver ArbolIntervalos
  */
-typedef struct ArbolIntervalosNode_ {
+typedef struct ArbolIntervalosNodo_ {
   Rango rango;
   int maximoFinalDeRango;
   int alto;
 
-  struct ArbolIntervalosNode_* derecha;
-  struct ArbolIntervalosNode_* izquierda;
-} ArbolIntervalosNode;
+  struct ArbolIntervalosNodo_* derecha;
+  struct ArbolIntervalosNodo_* izquierda;
+} ArbolIntervalosNodo;
 
 /**
  * Arbol Adelson-Velskii Landis, con invariantes extra:
@@ -31,7 +31,7 @@ typedef struct ArbolIntervalosNode_ {
  *   Los nodos guardan tambien la altura
  */
 typedef struct {
-  ArbolIntervalosNode* arbolAvlNode;
+  ArbolIntervalosNodo* arbolAvlNodo;
 } ArbolIntervalos;
 
 /**
@@ -55,7 +55,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol);
 /**
  * Calcula el factor de equilibrio de un nodo, garantizado O(1)
  */
-int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo);
+int arbolintervalos_factor_equilibrio(ArbolIntervalosNodo *nodo);
 
 /**
  * Alerta: puede no ser la unica interseccion!

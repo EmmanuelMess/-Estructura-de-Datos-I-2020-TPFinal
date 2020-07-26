@@ -5,8 +5,8 @@
 #include "deque.h"
 #include "matematica.h"
 
-typedef ArbolIntervalosNode* (Popper(Deque*)) ;
-typedef void Accion(ArbolIntervalosNode*);
+typedef ArbolIntervalosNodo* (Popper(Deque*)) ;
+typedef void Accion(ArbolIntervalosNodo*);
 
 /**
  * Alerta: si se modifica el arbol en actuar, la busqueda sigue sobre los nodos
@@ -19,14 +19,14 @@ typedef void Accion(ArbolIntervalosNode*);
  * @param pop deque.c:deque_pop_back o deque.c:deque_pop_front
  */
 static void recorrer_xfirstsearch(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
-  if (arbol->arbolAvlNode == NULL) return;
+  if (arbol->arbolAvlNodo == NULL) return;
 
   Deque *deque = deque_crear();
 
-  deque_push_front(deque, arbol->arbolAvlNode);
+  deque_push_front(deque, arbol->arbolAvlNodo);
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = pop(deque);
+    ArbolIntervalosNodo *nodo = pop(deque);
 
     if (nodo->izquierda)
       deque_push_front(deque, nodo->izquierda);
@@ -51,12 +51,12 @@ ArbolIntervalos *arbolintervalos_crear() {
  * Copiar no edita el arbol pasado, solo crea una copia exacta,
  * recorriendo nodo por nodo.
  */
-static ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
+static ArbolIntervalosNodo * copiar(ArbolIntervalosNodo * original) {
   if(original == NULL)
     return NULL;
 
-  ArbolIntervalosNode * copia = malloc(sizeof(ArbolIntervalosNode));
-  memcpy(copia, original, sizeof(ArbolIntervalosNode));
+  ArbolIntervalosNodo * copia = malloc(sizeof(ArbolIntervalosNodo));
+  memcpy(copia, original, sizeof(ArbolIntervalosNodo));
   copia->izquierda = copiar(original->izquierda);
   copia->derecha = copiar(original->derecha);
 
@@ -65,7 +65,7 @@ static ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
 
 ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   ArbolIntervalos * copia = arbolintervalos_crear();
-  copia->arbolAvlNode = copiar(arbol->arbolAvlNode);
+  copia->arbolAvlNodo = copiar(arbol->arbolAvlNodo);
   return copia;
 }
 
@@ -81,7 +81,7 @@ void arbolintervalos_destruir(ArbolIntervalos *arbol) {
  *
  * Dado un nodo, actualiza el maximo final de rango
  */
-static void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
+static void actualizar_max_nodo(ArbolIntervalosNodo* nodo) {
   if (nodo->izquierda == NULL && nodo->derecha == NULL)
     nodo->maximoFinalDeRango = nodo->rango.b;
   else if (nodo->izquierda == NULL)
@@ -100,7 +100,7 @@ static void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
  *
  * Dado un nodo, actualiza el alto del subarbol correspondiente
  */
-static void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
+static void actualizar_alto_nodo(ArbolIntervalosNodo* nodo) {
   if (nodo->izquierda && nodo->derecha)
     nodo->alto = max(nodo->izquierda->alto, nodo->derecha->alto) + 1;
   else if (nodo->izquierda)
@@ -118,12 +118,12 @@ static void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
  * actualiza los altos y los maximos finales de los nodos movidos
  */
 static void rotacion_simple_izquierda(
-  ArbolIntervalosNode** posicionDelNodo,
-  ArbolIntervalosNode* nodo
+  ArbolIntervalosNodo** posicionDelNodo,
+  ArbolIntervalosNodo* nodo
 ) {
-  ArbolIntervalosNode* nuevoHijo = nodo->izquierda;
-  ArbolIntervalosNode* nuevoNietoDerecha = nodo;
-  ArbolIntervalosNode* nuevoIzquierdaNietoDerecha = nodo->izquierda->derecha;
+  ArbolIntervalosNodo* nuevoHijo = nodo->izquierda;
+  ArbolIntervalosNodo* nuevoNietoDerecha = nodo;
+  ArbolIntervalosNodo* nuevoIzquierdaNietoDerecha = nodo->izquierda->derecha;
 
   *posicionDelNodo = nuevoHijo;
   nuevoHijo->derecha = nuevoNietoDerecha;
@@ -144,12 +144,12 @@ static void rotacion_simple_izquierda(
  * actualiza los altos y los maximos finales de los nodos movidos
  */
 static void rotacion_simple_derecha(
-  ArbolIntervalosNode** posicionDelNodo,
-  ArbolIntervalosNode* nodo
+  ArbolIntervalosNodo** posicionDelNodo,
+  ArbolIntervalosNodo* nodo
 ) {
-  ArbolIntervalosNode* nuevoHijo = nodo->derecha;
-  ArbolIntervalosNode* nuevoNietoIzquierda = nodo;
-  ArbolIntervalosNode* nuevaDerechaNietoIzquierda = nodo->derecha->izquierda;
+  ArbolIntervalosNodo* nuevoHijo = nodo->derecha;
+  ArbolIntervalosNodo* nuevoNietoIzquierda = nodo;
+  ArbolIntervalosNodo* nuevaDerechaNietoIzquierda = nodo->derecha->izquierda;
 
   *posicionDelNodo = nuevoHijo;
   nuevoHijo->izquierda = nuevoNietoIzquierda;
@@ -177,8 +177,8 @@ static void rebalancear(
   bool hizoRotacion = false;
 
   while (!deque_vacio(dequeDireccion) && !hizoRotacion) {
-    ArbolIntervalosNode** posicionDelNodo = (ArbolIntervalosNode**) deque_pop_front(dequeDireccion);
-    ArbolIntervalosNode* chequear = *posicionDelNodo;
+    ArbolIntervalosNodo** posicionDelNodo = (ArbolIntervalosNodo**) deque_pop_front(dequeDireccion);
+    ArbolIntervalosNodo* chequear = *posicionDelNodo;
 
     actualizar_max_nodo(chequear);
 
@@ -205,7 +205,7 @@ static void rebalancear(
   }
 
   while (!deque_vacio(dequeDireccion)) {
-    ArbolIntervalosNode** chequear = deque_pop_front(dequeDireccion);
+    ArbolIntervalosNodo** chequear = deque_pop_front(dequeDireccion);
     actualizar_max_nodo(*chequear);
     actualizar_alto_nodo(*chequear);
   }
@@ -231,7 +231,7 @@ void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
     encontrado = arbolintervalos_intersectar(arbol, rangoExtendido);
   }
 
-  ArbolIntervalosNode* nodo = calloc(1, sizeof(ArbolIntervalosNode));
+  ArbolIntervalosNodo* nodo = calloc(1, sizeof(ArbolIntervalosNodo));
   nodo->rango = rango;
   nodo->maximoFinalDeRango = rango.b;
   nodo->alto = 1;
@@ -239,12 +239,12 @@ void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   Deque* dequeDireccion = deque_crear();
 
   {
-    ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
+    ArbolIntervalosNodo **pos = &(arbol->arbolAvlNodo);
 
     while (*pos != NULL) {
       deque_push_front(dequeDireccion, pos);
 
-      ArbolIntervalosNode *chequear = *pos;
+      ArbolIntervalosNodo *chequear = *pos;
 
       if (rango.a < chequear->rango.a
           || (chequear->rango.a == rango.a && rango.b < chequear->rango.b))
@@ -272,8 +272,8 @@ void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
  * Estructura particular para rastrear_nodo, ver documentacion ahi.
  */
 struct NodoAEliminar {
-  ArbolIntervalosNode **posicionDelNodoAEliminar;
-  ArbolIntervalosNode *nodoAEliminar;
+  ArbolIntervalosNodo **posicionDelNodoAEliminar;
+  ArbolIntervalosNodo *nodoAEliminar;
 };
 
 /**
@@ -292,15 +292,15 @@ struct NodoAEliminar {
  * Si la funcion falla, devuelve false.
  */
 static bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolIntervalos *arbol, Rango rango) {
-  if(arbol->arbolAvlNode == NULL)
+  if(arbol->arbolAvlNodo == NULL)
     return false;
 
-  ArbolIntervalosNode **pos = &(arbol->arbolAvlNode);
+  ArbolIntervalosNodo **pos = &(arbol->arbolAvlNodo);
 
   while (*pos != NULL) {
     deque_push_front(dequeDireccion, pos);
 
-    ArbolIntervalosNode *chequear = *pos;
+    ArbolIntervalosNodo *chequear = *pos;
 
     if (rango.a < chequear->rango.a
         || (chequear->rango.a == rango.a && rango.b < chequear->rango.b))
@@ -322,7 +322,7 @@ static bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, Arbol
 }
 
 void arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
-  if(arbol->arbolAvlNode == NULL) return;
+  if(arbol->arbolAvlNodo == NULL) return;
 
   Deque *dequeDireccion = deque_crear();
 
@@ -335,13 +335,13 @@ void arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
     return;
   }
 
-  ArbolIntervalosNode ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
-  ArbolIntervalosNode * nodoAEliminar = aEliminar.nodoAEliminar;
+  ArbolIntervalosNodo ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
+  ArbolIntervalosNodo * nodoAEliminar = aEliminar.nodoAEliminar;
 
   {//Rastreo del nodo que lo reemplaza
     if (nodoAEliminar->izquierda != NULL && nodoAEliminar->derecha != NULL) {
-      ArbolIntervalosNode **posicionDelNodoSacado;
-      ArbolIntervalosNode *nuevoHijo;
+      ArbolIntervalosNodo **posicionDelNodoSacado;
+      ArbolIntervalosNodo *nuevoHijo;
 
       nuevoHijo = nodoAEliminar->derecha;
       posicionDelNodoSacado = &(nodoAEliminar->derecha);
@@ -380,7 +380,7 @@ void arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 }
 
 Rango arbolintervalos_intersectar(ArbolIntervalos *arbol, Rango rango) {
-  ArbolIntervalosNode *nodo = arbol->arbolAvlNode;
+  ArbolIntervalosNodo *nodo = arbol->arbolAvlNodo;
 
   while (nodo != NULL) {
     if (rango_intersecan(nodo->rango, rango))
@@ -406,7 +406,7 @@ Rango arbolintervalos_intersectar(ArbolIntervalos *arbol, Rango rango) {
 }
 
 void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
-  if(arbol->arbolAvlNode == NULL) {
+  if(arbol->arbolAvlNodo == NULL) {
     wprintf(L"Vacio\n");
     return;
   }
@@ -416,7 +416,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
 
   Deque* deque = deque_crear();
 
-  deque_push_front(deque, arbol->arbolAvlNode);
+  deque_push_front(deque, arbol->arbolAvlNodo);
   nodosEnDeque++;
 
   // Alerta: no es el mejor codigo,
@@ -424,7 +424,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
   // cada nivel en una linea nueva.
   unsigned int i = 0;
   for (; nodosEnDeque > 0; i++) {
-    ArbolIntervalosNode* nodo = deque_pop_back(deque);
+    ArbolIntervalosNodo* nodo = deque_pop_back(deque);
 
     if(!nodo) {
       wprintf(L" {    NULL    }");
@@ -460,7 +460,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
   wprintf(L"\n");
 }
 
-int arbolintervalos_factor_equilibrio(ArbolIntervalosNode *nodo) {
+int arbolintervalos_factor_equilibrio(ArbolIntervalosNodo *nodo) {
   if (nodo == NULL || (nodo->derecha == NULL && nodo->izquierda == NULL))
     return 0;
   else if (nodo->derecha && nodo->izquierda)

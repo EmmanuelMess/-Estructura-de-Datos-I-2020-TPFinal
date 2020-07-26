@@ -7,28 +7,28 @@
 /**
  * Nodo de una lista doblemente enlazada
  * Esta lista se usa para el arbol,
- * es usada con ArbolIntervalosNode* o ArbolIntervalosNode**,
+ * es usada con ArbolIntervalosNodo* o ArbolIntervalosNodo**,
  * en el primer caso es para representar caminos
  * y en el segundo para representar caminos donde los nodos son reemplazables,
  * ver arbol_intervalos.h:arbolintervalos_eliminar
  */
-typedef struct DequeNode_ {
+typedef struct DequeNodo_ {
   /**
    * Puede ser un puntero a nodo o puntero a puntero a nodo,
    * dependiente del uso
    */
   void* nodo;
-  struct DequeNode_* siguente;
-  struct DequeNode_* anterior;
-} DequeNode;
+  struct DequeNodo_* siguente;
+  struct DequeNodo_* anterior;
+} DequeNodo;
 
 /**
  * Lista doblemente enlazada
  * Diseñada para poder usarla de pila y cola
  */
 typedef struct {
-  DequeNode* primerNodo;
-  DequeNode* ultimoNodo;
+  DequeNodo* primerNodo;
+  DequeNodo* ultimoNodo;
 } Deque;
 
 /**
@@ -62,7 +62,7 @@ void * deque_pop_front(Deque* deque);
 void * deque_pop_back(Deque* deque);
 
 /**
- * Alerta: solo funciona si los punteros son a ArbolIntervalosNode
+ * Alerta: solo funciona si los punteros son a ArbolIntervalosNodo
  *
  * Muesta el deque en orden
  */

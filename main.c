@@ -14,19 +14,19 @@ wchar_t* max_puntero(wchar_t* a, wchar_t* b) {
 }
 
 void imprimir_intervalos(ArbolIntervalos *arbol) {
-  if (arbol->arbolAvlNode == NULL) {
+  if (arbol->arbolAvlNodo == NULL) {
     wprintf(L"{}\n");
     return;
   }
 
   Deque *deque = deque_crear();
 
-  deque_push_front(deque, arbol->arbolAvlNode);
+  deque_push_front(deque, arbol->arbolAvlNodo);
 
   wprintf(L"{");
 
   while (!deque_vacio(deque)) {
-    ArbolIntervalosNode *nodo = deque_pop_front(deque);
+    ArbolIntervalosNodo *nodo = deque_pop_front(deque);
 
     if (nodo->izquierda)
       deque_push_front(deque, nodo->izquierda);
