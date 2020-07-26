@@ -1,5 +1,4 @@
 #include <malloc.h>
-#include <stdbool.h>
 #include "mapa.h"
 
 Mapa* mapa_crear() {

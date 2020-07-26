@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <assert.h>
 #include "trie.h"
 #include "mapa.h"
 
