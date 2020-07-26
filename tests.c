@@ -5,6 +5,10 @@
 #include "avl/arbol_intervalos.h"
 #include "trie/trie.h"
 
+/**
+ * Son tests, algunos son para ValGrind, otros para testear funcionalidad
+ */
+
 void test_trie() {
   ArbolIntervalos * arbol = arbolintervalos_crear();
   arbolintervalos_insertar(arbol, (Rango) {.a = 15, .b = 15});
@@ -178,6 +182,10 @@ void test_arbol_trie() {
   trie_destruir(trie);
 }
 
+bool arbol_vacio(ArbolIntervalos * arbol) {
+  return arbol->arbolAvlNodo == NULL;
+}
+
 void test_propiedades() {
   ArbolIntervalos * A = arbolintervalos_crear();
   arbolintervalos_insertar(A, elem(0));
@@ -191,11 +199,10 @@ void test_propiedades() {
     ArbolIntervalos * union1 = arbolintervalos_union(A, B);
     ArbolIntervalos * union2 = arbolintervalos_union(B, A);
 
-    assert(union1->arbolAvlNodo->rango.a == -3);
-    assert(union1->arbolAvlNodo->rango.b == 5);
-
-    assert(union2->arbolAvlNodo->rango.a == -3);
-    assert(union2->arbolAvlNodo->rango.b == 5);
+    assert((arbol_vacio(union1) && arbol_vacio(union2))
+    || union1->arbolAvlNodo->rango.a == union2->arbolAvlNodo->rango.a);
+    assert((arbol_vacio(union1) && arbol_vacio(union2))
+    || union1->arbolAvlNodo->rango.b == union2->arbolAvlNodo->rango.b);
 
     arbolintervalos_destruir(union1);
     arbolintervalos_destruir(union2);
@@ -203,14 +210,12 @@ void test_propiedades() {
 
   {//Colmutativa interseccion
     ArbolIntervalos * interseccion1 = arbolintervalos_interseccion(A, B);
-
-    assert(interseccion1->arbolAvlNodo->rango.a == 0);
-    assert(interseccion1->arbolAvlNodo->rango.b == 3);
-
     ArbolIntervalos * interseccion2 = arbolintervalos_interseccion(B, A);
 
-    assert(interseccion2->arbolAvlNodo->rango.a == 0);
-    assert(interseccion2->arbolAvlNodo->rango.b == 3);
+    assert((arbol_vacio(interseccion1) && arbol_vacio(interseccion2))
+    || interseccion1->arbolAvlNodo->rango.a == interseccion2->arbolAvlNodo->rango.a);
+    assert((arbol_vacio(interseccion1) && arbol_vacio(interseccion2))
+    || interseccion1->arbolAvlNodo->rango.b == interseccion2->arbolAvlNodo->rango.b);
 
     arbolintervalos_destruir(interseccion1);
     arbolintervalos_destruir(interseccion2);
@@ -222,14 +227,10 @@ void test_propiedades() {
     ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
 
     ArbolIntervalos * CAiB = arbolintervalos_union(C, AiB);
-
-    assert(CAiB->arbolAvlNodo->rango.a == 0);
-    assert(CAiB->arbolAvlNodo->rango.b == 7);
-
     ArbolIntervalos * CAiCB = arbolintervalos_interseccion(CA, CB);
 
-    assert(CAiCB->arbolAvlNodo->rango.a == 0);
-    assert(CAiCB->arbolAvlNodo->rango.b == 7);
+    assert(CAiB->arbolAvlNodo->rango.a == CAiCB->arbolAvlNodo->rango.a);
+    assert(CAiB->arbolAvlNodo->rango.b == CAiCB->arbolAvlNodo->rango.b);
 
     arbolintervalos_destruir(CA);
     arbolintervalos_destruir(CB);
@@ -244,14 +245,10 @@ void test_propiedades() {
     ArbolIntervalos * AB = arbolintervalos_union(A, B);
 
     ArbolIntervalos * CiAB = arbolintervalos_interseccion(C, AB);
-
-    assert(CiAB->arbolAvlNodo->rango.a == 3);
-    assert(CiAB->arbolAvlNodo->rango.b == 5);
-
     ArbolIntervalos * CiACiB = arbolintervalos_union(CiA, CiB);
 
-    assert(CiACiB->arbolAvlNodo->rango.a == 3);
-    assert(CiACiB->arbolAvlNodo->rango.b == 5);
+    assert(CiAB->arbolAvlNodo->rango.a == CiACiB->arbolAvlNodo->rango.a);
+    assert(CiAB->arbolAvlNodo->rango.b == CiACiB->arbolAvlNodo->rango.b);
 
     arbolintervalos_destruir(CiA);
     arbolintervalos_destruir(CiB);
@@ -262,15 +259,13 @@ void test_propiedades() {
 
   { //Interseccion como resta
     ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
-
-    assert(AiB->arbolAvlNodo->rango.a == 0);
-    assert(AiB->arbolAvlNodo->rango.b == 3);
-
     ArbolIntervalos * r1 = arbolintervalos_resta(A, B);
     ArbolIntervalos * r2 = arbolintervalos_resta(A, r1);
 
-    assert(r2->arbolAvlNodo->rango.a == 0);
-    assert(r2->arbolAvlNodo->rango.b == 3);
+    assert((arbol_vacio(AiB) && arbol_vacio(r2))
+    || AiB->arbolAvlNodo->rango.a == r2->arbolAvlNodo->rango.a);
+    assert((arbol_vacio(AiB) && arbol_vacio(r2))
+    || AiB->arbolAvlNodo->rango.b == r2->arbolAvlNodo->rango.b);
 
     arbolintervalos_destruir(AiB);
     arbolintervalos_destruir(r1);
@@ -281,46 +276,42 @@ void test_propiedades() {
     ArbolIntervalos * cA = arbolintervalos_complemento(A);
     ArbolIntervalos * cB = arbolintervalos_complemento(B);
     ArbolIntervalos * cAcB = arbolintervalos_union(cA, cB);
-
-    assert(cAcB->arbolAvlNodo->alto == 2);
-    assert(!inexistente(arbolintervalos_intersectar(cAcB, (Rango) {.a = INT_MIN, .b = -1})));
-    assert(!inexistente(arbolintervalos_intersectar(cAcB, (Rango) {.a = 4, .b = INT_MAX})));
-
     ArbolIntervalos * AiB = arbolintervalos_interseccion(A, B);
     ArbolIntervalos * cAiB = arbolintervalos_complemento(AiB);
 
-    assert(cAiB->arbolAvlNodo->alto == 2);
-    assert(!inexistente(arbolintervalos_intersectar(cAiB, (Rango) {.a = INT_MIN, .b = -1})));
-    assert(!inexistente(arbolintervalos_intersectar(cAiB, (Rango) {.a = 4, .b = INT_MAX})));
+    assert(cAcB->arbolAvlNodo->alto == cAiB->arbolAvlNodo->alto);
+
+    ArbolIntervalos * resta = arbolintervalos_resta(cAcB, cAiB);
+
+    assert(resta->arbolAvlNodo == NULL);
 
     arbolintervalos_destruir(cA);
     arbolintervalos_destruir(cB);
     arbolintervalos_destruir(cAcB);
     arbolintervalos_destruir(AiB);
     arbolintervalos_destruir(cAiB);
+    arbolintervalos_destruir(resta);
   }
 
   {//De Morgan interseccion
     ArbolIntervalos * cA = arbolintervalos_complemento(A);
     ArbolIntervalos * cB = arbolintervalos_complemento(B);
     ArbolIntervalos * cAicB = arbolintervalos_interseccion(cA, cB);
-
-    assert(cAicB->arbolAvlNodo->alto == 2);
-    assert(!inexistente(arbolintervalos_intersectar(cAicB, (Rango) {.a = INT_MIN, .b = -4})));
-    assert(!inexistente(arbolintervalos_intersectar(cAicB, (Rango) {.a = 6, .b = INT_MAX})));
-
     ArbolIntervalos * AB = arbolintervalos_union(A, B);
     ArbolIntervalos * cAB = arbolintervalos_complemento(AB);
 
-    assert(cAB->arbolAvlNodo->alto == 2);
-    assert(!inexistente(arbolintervalos_intersectar(cAB, (Rango) {.a = INT_MIN, .b = -4})));
-    assert(!inexistente(arbolintervalos_intersectar(cAB, (Rango) {.a = 6, .b = INT_MAX})));
+    assert(cAicB->arbolAvlNodo->alto == cAB->arbolAvlNodo->alto);
+
+    ArbolIntervalos * resta = arbolintervalos_resta(cAicB, cAB);
+
+    assert(resta->arbolAvlNodo == NULL);
 
     arbolintervalos_destruir(cA);
     arbolintervalos_destruir(cB);
     arbolintervalos_destruir(cAicB);
     arbolintervalos_destruir(AB);
     arbolintervalos_destruir(cAB);
+    arbolintervalos_destruir(resta);
   }
 
   arbolintervalos_destruir(A);
