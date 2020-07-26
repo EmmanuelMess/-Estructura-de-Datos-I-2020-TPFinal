@@ -50,10 +50,6 @@ void * deque_pop_front(Deque *deque) {
   return elemento;
 }
 
-void * deque_peek_front(Deque *deque) {
-  return deque->primerNodo->nodo;
-}
-
 void deque_push_front(Deque *deque, void *elemento) {
   DequeNode* node = calloc(1, sizeof(DequeNode));
   node->nodo = elemento;
