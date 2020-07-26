@@ -42,7 +42,7 @@ void debug1(wchar_t * alias, Metadatos metadatos, int* enteros) {
   wprintf(L"DEBUG INFO\n");
   wprintf(L"Parser: %s ", alias);
 
-  for (int i = 0; i < metadatos.largo; ++i) {
+  for (int i = 0; i < metadatos.cantidadDeEnteros; ++i) {
     wprintf(L"%d ", enteros[i]);
   }
 #endif

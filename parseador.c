@@ -6,7 +6,18 @@
 #include <wchar.h>
 #include "parseador.h"
 
+/**
+ * Es mas facil de leer si se piensa en las funciones en este archivo
+ * como automatas de estado finito.
+ */
+
+/**
+ * Azucar para crear un error general en una posicion
+ */
 #define METADATOS_ERROR_GENERAL(pos) METADATOS_ERROR(METADATOS_ERROR_NUM, pos)
+/**
+ * Azucar para crear un error al imprimir en una posicion
+ */
 #define METADATOS_ERROR_ARG_IMPRIMIR(pos) METADATOS_ERROR(METADATOS_ERROR_ARG_IMPRIMIR_NUM, pos)
 
 void remover_espacios(wchar_t * entrada) {
@@ -19,7 +30,7 @@ void remover_espacios(wchar_t * entrada) {
   entrada[j] = '\0';
 }
 
-bool es_numero(const wchar_t* entrada) {
+static bool es_numero(const wchar_t* entrada) {
   if(iswdigit(*entrada)) return true;
   if(*entrada == '-' && iswdigit(*(entrada+1))) return true;
   return false;
@@ -28,8 +39,10 @@ bool es_numero(const wchar_t* entrada) {
 /**
  * Verifica que un conjunto sin espacios este bien formulado
  * Ej "{}", "{5,6}", "{x:80<=x<=30}"
+ *
+ * Es mas facil de leer si se lo piensa como un automata de estado finito.
  */
-Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
+static Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
   if(*entrada != '{') return METADATOS_ERROR_GENERAL(entrada);
 
   entrada++;
@@ -46,7 +59,7 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
       entrada++;
       if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
 
-      metadatos.largo = 0;
+      metadatos.cantidadDeEnteros = 0;
       return metadatos;
     }
 
@@ -56,7 +69,7 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
       if (*entrada != ',' && *entrada != '}') return METADATOS_ERROR_GENERAL(entrada);
       else entrada++;
 
-      metadatos.largo++;
+      metadatos.cantidadDeEnteros++;
     }
 
     if(*entrada != '\0') return METADATOS_ERROR_GENERAL(entrada);
@@ -101,7 +114,7 @@ Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entrada) {
   return metadatos;
 }
 
-Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
+static Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
   if(!iswalnum(*entrada) && *entrada != '~') return METADATOS_ERROR_GENERAL(entrada);
 
   if(*entrada == '~') {
@@ -145,11 +158,7 @@ Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
   return metadatos;
 }
 
-/**
- * Crea infomacion que necesita la funcion procesar_asignacion.
- * Entrada no puede tener espacios o caracteres vacios
- */
-Metadatos chequeador(wchar_t * entrada) {
+Metadatos parser(wchar_t * entrada) {
   const wchar_t * ordenSalir = L"salir";
   if(wcsncmp(ordenSalir, entrada, wcslen(ordenSalir)) == 0) {
     if (wcslen(entrada) != wcslen(ordenSalir))

@@ -108,7 +108,7 @@ int main(int argc, char *argv[]) {
     if (entrada != NULL) {
       remover_espacios(entrada);
 
-      Metadatos metadatos = chequeador(entrada);
+      Metadatos metadatos = parser(entrada);
 
       if (metadatos.error) {
         wprintf(L"Error de parseo: %.5ls\n",
@@ -176,11 +176,11 @@ int main(int argc, char *argv[]) {
         ArbolIntervalos *arbol = arbolintervalos_crear();
 
         if (metadatos.esExtension) {
-          int enteros[metadatos.largo +
+          int enteros[metadatos.cantidadDeEnteros +
                       1];//std C no permite arrays automaticos de largo 0
           procesar_asignacion_extension(metadatos, entrada, alias, enteros);
 
-          for (int i = 0; i < metadatos.largo; ++i)
+          for (int i = 0; i < metadatos.cantidadDeEnteros; ++i)
             arbolintervalos_insertar(arbol,
                                      (Rango) {.a = enteros[i], .b = enteros[i]});
 
