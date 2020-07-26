@@ -6,8 +6,19 @@
 #include "matematica.h"
 
 typedef ArbolIntervalosNode* (Popper(Deque*)) ;
+typedef void Accion(ArbolIntervalosNode*);
 
-void itree_recorrer_fs(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
+/**
+ * Alerta: si se modifica el arbol en actuar, la busqueda sigue sobre los nodos
+ * no observados, tener cuidado.
+ *
+ * Recorre un arbol con via breath first search si se le pasa
+ * deque_pop_back o depth first search si se le pasa deque_pop_front
+ *
+ * @param actuar funcion que actua en cada nodo
+ * @param pop deque.c:deque_pop_back o deque.c:deque_pop_front
+ */
+static void recorrer_xfirstsearch(ArbolIntervalos *arbol, Accion actuar, Popper pop) {
   if (arbol->arbolAvlNode == NULL) return;
 
   Deque *deque = deque_crear();
@@ -34,7 +45,13 @@ ArbolIntervalos *arbolintervalos_crear() {
   return avl;
 }
 
-ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
+/**
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Copiar no edita el arbol pasado, solo crea una copia exacta,
+ * recorriendo nodo por nodo.
+ */
+static ArbolIntervalosNode * copiar(ArbolIntervalosNode * original) {
   if(original == NULL)
     return NULL;
 
@@ -52,24 +69,38 @@ ArbolIntervalos * arbolintervalos_copiar(ArbolIntervalos * arbol) {
   return copia;
 }
 
-void arbolintervalos_destruir(ArbolIntervalos *tree) {
-  itree_recorrer_fs(tree, (Accion*) free, (Popper*) deque_pop_back);
-  free(tree);
+void arbolintervalos_destruir(ArbolIntervalos *arbol) {
+  recorrer_xfirstsearch(arbol, (Accion *) free, (Popper *) deque_pop_back);
+  free(arbol);
 }
 
-void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
+
+/**
+ * Alarta: No es recursivo!
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un nodo, actualiza el maximo final de rango
+ */
+static void actualizar_max_nodo(ArbolIntervalosNode* nodo) {
   if (nodo->izquierda == NULL && nodo->derecha == NULL)
-    nodo->maxB = nodo->rango.b;
+    nodo->maximoFinalDeRango = nodo->rango.b;
   else if (nodo->izquierda == NULL)
-    nodo->maxB = nodo->derecha->maxB;
+    nodo->maximoFinalDeRango = nodo->derecha->maximoFinalDeRango;
   else if (nodo->derecha == NULL)
-    nodo->maxB = nodo->izquierda->maxB;
+    nodo->maximoFinalDeRango = nodo->izquierda->maximoFinalDeRango;
   else
-    nodo->maxB = nodo->izquierda->maxB > nodo->derecha->maxB ?
-                 nodo->izquierda->maxB : nodo->derecha->maxB;
+    nodo->maximoFinalDeRango =
+      nodo->izquierda->maximoFinalDeRango > nodo->derecha->maximoFinalDeRango ?
+      nodo->izquierda->maximoFinalDeRango : nodo->derecha->maximoFinalDeRango;
 }
 
-void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
+/**
+ * Alarta: No es recursivo!
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un nodo, actualiza el alto del subarbol correspondiente
+ */
+static void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
   if (nodo->izquierda && nodo->derecha)
     nodo->alto = max(nodo->izquierda->alto, nodo->derecha->alto) + 1;
   else if (nodo->izquierda)
@@ -80,7 +111,13 @@ void actualizar_alto_nodo(ArbolIntervalosNode* nodo) {
     nodo->alto = 1;
 }
 
-void rotacion_simple_izquierda(
+/**
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un nodo, rota a izquierda (para mantener balanceo del arbol AVL),
+ * actualiza los altos y los maximos finales de los nodos movidos
+ */
+static void rotacion_simple_izquierda(
   ArbolIntervalosNode** posicionDelNodo,
   ArbolIntervalosNode* nodo
 ) {
@@ -100,7 +137,13 @@ void rotacion_simple_izquierda(
   actualizar_alto_nodo(nuevoHijo);
 }
 
-void rotacion_simple_derecha(
+/**
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un nodo, rota a derecha (para mantener balanceo del arbol AVL),
+ * actualiza los altos y los maximos finales de los nodos movidos
+ */
+static void rotacion_simple_derecha(
   ArbolIntervalosNode** posicionDelNodo,
   ArbolIntervalosNode* nodo
 ) {
@@ -120,7 +163,15 @@ void rotacion_simple_derecha(
   actualizar_alto_nodo(nuevoHijo);
 }
 
-void rebalancear(
+/**
+ * Alerta: Chequear que en el deque de entrada no haya NULL ni punteros a NULL!
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un Deque con punteros a puntero a nodos en un camino desde la raiz
+ * hasta un nodo modificado, se encarga de que los subarboles del camino
+ * esten balanceados.
+ */
+static void rebalancear(
   Deque* dequeDireccion
 ) {
   bool hizoRotacion = false;
@@ -160,9 +211,9 @@ void rebalancear(
   }
 }
 
-bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
+void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango))
-    return false;
+    return;
 
   Rango rangoExtendido = {
     .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
@@ -182,7 +233,7 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
 
   ArbolIntervalosNode* nodo = calloc(1, sizeof(ArbolIntervalosNode));
   nodo->rango = rango;
-  nodo->maxB = rango.b;
+  nodo->maximoFinalDeRango = rango.b;
   nodo->alto = 1;
 
   Deque* dequeDireccion = deque_crear();
@@ -205,7 +256,7 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
       else {
         deque_destruir(dequeDireccion);
 
-        return false;
+        return;
       }
     }
 
@@ -215,16 +266,32 @@ bool arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   rebalancear(dequeDireccion);
 
   deque_destruir(dequeDireccion);
-
-  return true;
 }
 
+/**
+ * Estructura particular para rastrear_nodo, ver documentacion ahi.
+ */
 struct NodoAEliminar {
   ArbolIntervalosNode **posicionDelNodoAEliminar;
   ArbolIntervalosNode *nodoAEliminar;
 };
 
-bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolIntervalos *arbol, Rango rango) {
+/**
+ * Alerta: Funcion para uso en la eliminacion de nodos,
+ * para otras cosas probablemente se necesite una version mas simple.
+ * Alerta: Funcion interna, puede no mantener las invariantes
+ *
+ * Dado un arbol y un rango, lo encuentra en el arbol agregando el camino
+ * al {@param dequeDireccion} pasado,
+ * en la forma de punteros a punteros de nodos, esto es decir,
+ * para cada en el camino, se tiene el puntero al puntero en el padre.
+ *
+ * Cuando encuentra el nodo, devuelve un puntero a puntero del nodo,
+ * y un puntero al nodo, para facilitar el uso para elminar nodos.
+ *
+ * Si la funcion falla, devuelve false.
+ */
+static bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolIntervalos *arbol, Rango rango) {
   if(arbol->arbolAvlNode == NULL)
     return false;
 
@@ -247,7 +314,6 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
       x->posicionDelNodoAEliminar = pos;
       return true;
     } else {
-      deque_destruir(dequeDireccion);
       return false;
     }
   }
@@ -255,10 +321,8 @@ bool rastrear_nodo(struct NodoAEliminar * x, Deque *dequeDireccion, ArbolInterva
   return false;
 }
 
-
-bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
-  if(arbol->arbolAvlNode == NULL)
-    return false;
+void arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
+  if(arbol->arbolAvlNode == NULL) return;
 
   Deque *dequeDireccion = deque_crear();
 
@@ -268,7 +332,7 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 
   if(!resultado) {
     deque_destruir(dequeDireccion);
-    return false;
+    return;
   }
 
   ArbolIntervalosNode ** posicionDelNodoAEliminar = aEliminar.posicionDelNodoAEliminar;
@@ -293,7 +357,7 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
 
       nodoAEliminar->rango = nuevoHijo->rango;
       nodoAEliminar->alto = nuevoHijo->alto;
-      nodoAEliminar->maxB = nuevoHijo->maxB;
+      nodoAEliminar->maximoFinalDeRango = nuevoHijo->maximoFinalDeRango;
 
       *posicionDelNodoSacado = nuevoHijo->derecha;
 
@@ -313,27 +377,25 @@ bool arbolintervalos_eliminar(ArbolIntervalos *arbol, Rango rango) {
   rebalancear(dequeDireccion);
 
   deque_destruir(dequeDireccion);
-
-  return true;
 }
 
-Rango arbolintervalos_intersectar(ArbolIntervalos *tree, Rango rango) {
-  ArbolIntervalosNode *nodo = tree->arbolAvlNode;
+Rango arbolintervalos_intersectar(ArbolIntervalos *arbol, Rango rango) {
+  ArbolIntervalosNode *nodo = arbol->arbolAvlNode;
 
   while (nodo != NULL) {
     if (rango_intersecan(nodo->rango, rango))
       return nodo->rango;
 
-    if (nodo->maxB < rango.a)
+    if (nodo->maximoFinalDeRango < rango.a)
       return RANGO_INEXISTENTE;
 
     if (rango.a <= nodo->rango.a) {
-      if (nodo->izquierda && rango.a <= nodo->izquierda->maxB)
+      if (nodo->izquierda && rango.a <= nodo->izquierda->maximoFinalDeRango)
         nodo = nodo->izquierda;
       else
         return RANGO_INEXISTENTE;
     } else {
-      if (nodo->derecha && rango.a <= nodo->derecha->maxB)
+      if (nodo->derecha && rango.a <= nodo->derecha->maximoFinalDeRango)
         nodo = nodo->derecha;
       else
         return RANGO_INEXISTENTE;
@@ -357,6 +419,9 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
   deque_push_front(deque, arbol->arbolAvlNode);
   nodosEnDeque++;
 
+  // Alerta: no es el mejor codigo,
+  // pero basicamente usa el hecho de que el arbol es binaria para imprimir
+  // cada nivel en una linea nueva.
   unsigned int i = 0;
   for (; nodosEnDeque > 0; i++) {
     ArbolIntervalosNode* nodo = deque_pop_back(deque);
@@ -368,7 +433,7 @@ void arbolintervalos_imprimir(ArbolIntervalos *arbol) {
     } else {
       wprintf(
         L" {m: %d, r: [%d, %d], a: %d}",
-        nodo->maxB,
+        nodo->maximoFinalDeRango,
         nodo->rango.a,
         nodo->rango.b,
         nodo->alto

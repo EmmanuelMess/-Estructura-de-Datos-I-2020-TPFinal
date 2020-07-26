@@ -83,7 +83,7 @@ int deque_imprimir(Deque *deque) {
     else
       wprintf(
         L" {m: %d, r: [%d, %d], a: %d}",
-        nodo->maxB,
+        nodo->maximoFinalDeRango,
         nodo->rango.a,
         nodo->rango.b,
         nodo->alto
@@ -97,7 +97,7 @@ int deque_imprimir(Deque *deque) {
   else
     wprintf(
       L" {m: %d, r: [%d, %d], a: %d}",
-      nodo->maxB,
+      nodo->maximoFinalDeRango,
       nodo->rango.a,
       nodo->rango.b,
       nodo->alto
