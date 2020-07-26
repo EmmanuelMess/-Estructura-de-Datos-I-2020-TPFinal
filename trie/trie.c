@@ -18,6 +18,13 @@ void trie_destruir(Trie* trie) {
   free(trie);
 }
 
+/**
+ * Toma un caracter (ver trie.h para caracteres aceptados)
+ * y devuelve un entero de 0 a mapa.h:CANTIDAD_LETRAS-1
+ *
+ * Es una funcion hash por caracter, y si el caracter es aceptable,
+ * no genera colisiones
+ */
 static unsigned int reasignar(wchar_t c) {
   if('a' <= c && c <= 'z') return c - 'a';
 
@@ -58,12 +65,18 @@ static unsigned int reasignar(wchar_t c) {
   return 0;//mapeo el resto a 'a' para evitar crashes
 }
 
+/**
+ * Detecta si el caracter pasado es caracter de terminacion de un alias
+ */
 static bool es_terminador(wchar_t c) {
   return c == L'\n' || c == L'\0' || c == L'\r';
 }
 
-Trie* trie_hijo(Trie* trie, wchar_t pos) {
-  return mapa_obtener(trie->mapa, reasignar(pos));
+/**
+ * Devuelve el hijo del trie en la posicion dada por un caracter
+ */
+Trie* trie_hijo(Trie* trie, wchar_t caracter) {
+  return mapa_obtener(trie->mapa, reasignar(caracter));
 }
 
 void trie_agregar(Trie *trie, wchar_t *palabra, ArbolIntervalos *conjunto) {
