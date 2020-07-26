@@ -12,9 +12,13 @@
 
 /*
  * Archivo de debugeo, contiene funciones que en la version final
- * no tienen ningun codigo.
+ * no tienen ningun codigo,
+ * es decir, si DEBUG es false, las funciones pasan a ser vacias
  */
 
+/**
+ * DEBUG es true sii se esta ejecutando una version de depuracion.
+ */
 #define DEBUG true
 
 void debug_main(int argc, char *argv[]) {

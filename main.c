@@ -9,10 +9,21 @@
 #include "avl/arbol_intervalos_extras.h"
 #include "debug.h"
 
+/**
+ * Dados dos punteros en el mismo array de caracteres,
+ * devuelve el que mas adelante este
+ */
 wchar_t* max_puntero(wchar_t* a, wchar_t* b) {
   return a > b? a: b;
 }
 
+/**
+ * Dado un arbol de intervalos,
+ * que cumple con las condiciones detalladas en arbol_intervalos.h,
+ * Imprime la lista de intervalos disjuntos contenidos en el.
+ *
+ * Aviso: Ningun orden particular es usado.
+ */
 void imprimir_intervalos(ArbolIntervalos *arbol) {
   if (arbol->arbolAvlNodo == NULL) {
     wprintf(L"{}\n");
@@ -45,18 +56,42 @@ void imprimir_intervalos(ArbolIntervalos *arbol) {
   deque_destruir(deque);
 }
 
+
+/**
+ * NOMBRE
+ *   Interprete
+ * SINOPSIS
+ *   Interprete
+ * DESCRIPCION
+ *   Implementacion simple de un interprete capaz de hacer operaciones de
+ *   asignacion de conjuntos:
+ *     <alias> = {<aliasInterno>: k <= <aliasInterno> <= k1}
+ *     <alias> = {k, k1, k2, ...}
+ *   Union:
+ *     <alias> = <alias1> | <alias2>
+ *   Interseccion:
+ *     <alias> = <alias1> & <alias2>
+ *   Resta:
+ *     <alias> = <alias1> - <alias2>
+ *   Complemento:
+ *     <alias> = ~<alias1>
+ *   Impresion:
+ *     imprimir <alias>
+ *   Salida:
+ *     salir
+ * AUTOR
+ *   Facundo Emmanuel Messulam
+ */
 int main(int argc, char *argv[]) {
   debug_main(argc, argv);
 
   if (fwide(stdout, 1) <= 0)
-    puts(
-      "No se pudo crear la salida correctamente, es posible que no ande el imprimir\n");
+    puts("No se pudo crear la salida correctamente, es posible que no ande el imprimir\n");
 
   char *locale = "es_ES.utf8";
 
   if (setlocale(LC_ALL, locale) == NULL)
-    wprintf(
-      L"Error: no tiene el locale %s instalado, tildes y otros no van a funcionar\n",
+    wprintf(L"Error: no tiene el locale %s instalado, tildes y otros no van a funcionar\n",
       locale);
   else
     wprintf(L"Pruebe tildes y eñes!\n");
