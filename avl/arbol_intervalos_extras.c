@@ -20,6 +20,7 @@ ArbolIntervalos * arbolintervalos_union(ArbolIntervalos * arbolA,
     aUnir = arbolB;
   }
 
+  //DFS del arbol aUnir (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
   deque_push_front(deque, aUnir->arbolAvlNode);
 
@@ -54,6 +55,7 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
     aIntersecar = arbolB;
   }
 
+  //DFS del arbol aRecorrer (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
   deque_push_front(deque, aRecorrer->arbolAvlNode);
 
@@ -63,11 +65,11 @@ ArbolIntervalos * arbolintervalos_interseccion(ArbolIntervalos * arbolA,
     if (nodo->izquierda) deque_push_front(deque, nodo->izquierda);
     if (nodo->derecha) deque_push_front(deque, nodo->derecha);
 
-
     StackRango *dequeRangos = stackrango_crear();
 
     stackrango_push(dequeRangos, nodo->rango);
-
+    // Si el nodo->rango interseca varias veces, el while lidia con eso,
+    // usa la invariante de que los rangos son disjuntos
     while (!stackrango_vacio(dequeRangos)) {
       Rango rangoBase = stackrango_pop(dequeRangos);
       Rango interseccion = arbolintervalos_intersectar(aIntersecar, rangoBase);
@@ -101,6 +103,7 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
 
   ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
 
+  //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
   deque_push_front(deque, base->arbolAvlNode);
 
@@ -136,6 +139,7 @@ ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
 
   if (arbol->arbolAvlNode == NULL) return base;
 
+  //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
   Deque *deque = deque_crear();
   deque_push_front(deque, base->arbolAvlNode);
 
