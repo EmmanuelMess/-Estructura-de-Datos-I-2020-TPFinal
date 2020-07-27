@@ -124,8 +124,12 @@ int main(int argc, char *argv[]) {
         wchar_t *alias = entrada + wcslen(L"imprimir");
         ArbolIntervalos *arbol = trie_obtener(trie, alias);
 
-        imprimir_intervalos(arbol);
-        debug0(arbol);
+        if (arbol == NULL) {
+          wprintf(L"Alias no existe: %s\n", alias);
+        } else {
+          imprimir_intervalos(arbol);
+          debug0(arbol);
+        }
       } else if (metadatos.union_ || metadatos.interseccion ||
                  metadatos.resta) {
         wchar_t alias[metadatos.largoAlias + 1];
