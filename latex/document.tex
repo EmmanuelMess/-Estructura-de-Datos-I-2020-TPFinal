@@ -5,11 +5,6 @@
 
 \usepackage[a4paper, total={6in, 8in}]{geometry}
 
-\usepackage{mathtools}
-\usepackage{amsfonts}
-\usepackage{amsmath}
-\usepackage{amssymb}
-
 \usepackage[utf8]{inputenc}%%permite acentos y otras bobadas
 \usepackage[T1]{fontenc}%%hace que letras con acento sean una sola
 
@@ -19,11 +14,35 @@
 		author  = {Tenembaum, A. N. Augenstein, J. J.},
 		title   = {Estructuras de Datos en C},
 		publisher   = {Prentice-Hall},
-		date    = {1991}
+		date    = {1991},
+	}
+	@book{c,
+		author  = {Donald Knuth},
+		title   = {The Art of Computer Programming: Searching and Sorting Algorithms},
+	}
+	@paper{d,
+		author  = {G.M. Adelson-Velskii and E.M. Landis},
+		title   = {An algorithm for the organization of information},
+		date = {1962},
+	}
+	@article{DBLP:journals/corr/BlellochFS16,
+		author    = {Guy E. Blelloch and
+			Daniel Ferizovic and
+			Yihan Sun},
+		title     = {Parallel Ordered Sets Using Join},
+		journal   = {CoRR},
+		volume    = {abs/1602.02120},
+		year      = {2016},
+		url       = {http://arxiv.org/abs/1602.02120},
+		archivePrefix = {arXiv},
+		eprint    = {1602.02120},
+		timestamp = {Fri, 14 Sep 2018 07:01:58 +0200},
+		biburl    = {https://dblp.org/rec/journals/corr/BlellochFS16.bib},
+		bibsource = {dblp computer science bibliography, https://dblp.org}
 	}
 \end{filecontents*}
 
-\usepackage{biblatex}
+\usepackage[backend=biber]{biblatex}
 \addbibresource{bib.bib}
 
 \title{Final 2020\\
@@ -221,13 +240,15 @@
 	El sistema en cuestion permite chequear automaticamente commit por commit, y avisa cuando hay un error. Tambien se ejecuto \verb|test_main()| desde valgrind, así cerciorandome de que la funciones de hecho andan, sin perder memoria, u 
 	otros errores menos visibles.
 
+	\section*{Otra información}
+
+	Soy consciente de que existe un articulo~\cite{DBLP:journals/corr/BlellochFS16} explicando algoritmos optimizados para realizar las operaciones de conjuntos en este trabajo. Sin embargo, no creo necesaria la implementación de algorimos más complejos dado que los casos extermos para las implementaciones actuales son muy dificiles de alcanzar. Con esto me refiero a que dado que la entrada esta limitada a tipeo a mano, es muy difil que un usuario llege a tener que unir, por ejemplo, el conjunto de todos los pares, con el conjunto de todos los impares.
+	
+	El algoritmo utilizado lidia muy bien con los conjuntos que un usuario puede ingresar: La herramienta funciona muy bien para lo que se la requiere.
+
 	\section*{Bibliografía}
 	
 	\nocite{*}
 	\printbibliography[heading=none]
-	
-	
-	\section*{Otra información}
-	
 	
 \end{document}
