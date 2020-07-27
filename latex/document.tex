@@ -1,0 +1,233 @@
+% !TeX document-id = {d7a99a62-8c69-45ce-b1c0-46c0c44092c7}
+% !TeX TXS-program:bibliography = txs:///biber
+
+\documentclass{article}
+
+\usepackage[a4paper, total={6in, 8in}]{geometry}
+
+\usepackage{mathtools}
+\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\usepackage[utf8]{inputenc}%%permite acentos y otras bobadas
+\usepackage[T1]{fontenc}%%hace que letras con acento sean una sola
+
+\usepackage{filecontents}%%Para bibliografia en este archivo
+\begin{filecontents*}{bib.bib}
+	@book{b,
+		author  = {Tenembaum, A. N. Augenstein, J. J.},
+		title   = {Estructuras de Datos en C},
+		publisher   = {Prentice-Hall},
+		date    = {1991}
+	}
+\end{filecontents*}
+
+\usepackage{biblatex}
+\addbibresource{bib.bib}
+
+\title{Final 2020\\
+	{\small{materia}}\\
+	Estructuras de Datos y Algoritmos I\\
+	{\small{dicatada por}}\\
+	Federico Severino Guimpel\\
+	{\small{en la carrera}}\\
+	Licenciatura en Ciencias de la Computación\\
+	{\small{en}}\\
+	Facultad de Ciencias Exactas, Ingeniería y Agrimensura\\
+	{\small{de la}}\\
+	Universidad Nacional de Rosario}
+\author{Facundo Emmanuel Messulam\footnotemark\\}
+\footnotetext{Facultad de Ciencias Exactas, Ingeniería y Agrimensura, Licenciatura en Ciencias de la Computación}
+
+\begin{document}
+    \begin{titlepage}
+        \maketitle
+        \thispagestyle{empty}
+    \end{titlepage}
+
+	\section*{Eleccion de estructuras de datos utilizadas}
+
+	\subsection*{Parser}
+	
+	El parser es una funcion que devuelve \verb|Metadatos|, esta estructura fue elegida por su simpleza. Implementar un sistema complejo para una serie tan simple de operaciones (que no tienen siquiera recursion en su gramatica), es demaciado complejo, sin mucha ganancia.
+	
+	La idea usada es la de leer cada entrada del usuario dos veces, una para crear informacion sobre la entrada, con un automata de estado finito muy simple, que avanza de izquierda a derecha, y chequea errores de gramatica, y devuelve una estructura con toda la información para la siguiente pasada. La siguiente pasada, lee la estructura, y la usa para gestionar memoria y leer correctamente la entrada, precaracterizada como ``error'', ``asignacion'', ``operacion'' y sus correspondientes subdivisiones: los tipos de error (ver seccion errores más abajo); asignacion por extension y compresion; y las operaciones union, interseccion, resta y complemento, respectivamente.
+	
+	\subsection*{Mapeo alias-arbol}
+
+	Para hacer el mapeo entre los aliases y los arboles, usé una estructura especialmente simple, y muy extendible: el trie.
+	
+	En esta implementacion, el trie esta dividido en dos partes, el Mapa y el Trie. El Mapa es una tabla hash muy simple, que permite enlazar una letra a un nuevo Trie. El Trie es contiene informacion sobre si corresponde al ultimo caracter de una palabra, y en este caso tiene una referencia al ArbolIntervalos correspondiente, tambien tiene un Mapa para poder seguir avanzando.
+	
+	El trie funciona agregando palabras letra por letra y en la ultima letra guardando el arbol. Cuando se quiere obtener el arbol correspondiente a un alias, el proceso es el mismo. 
+	
+	En el mapa se usa una funcion hash muy simple que mapea los caracteres a un entero unico, de tal forma que los enteros sean consecutivos y empiezen en 0.
+	
+	En esta implementacion se decidio no hacer un eliminador de aliases. Y, cuando el arbol se elimina, los punteros a los arboles se eliminan tambien. Estos cambios son para simplificar el uso, y evitar operaciones innecesarias en la implementacion actual. 
+
+	\subsection*{Guardado de conjuntos}
+	
+	Esta es la parte más grande e importante del projecto. La estructura usada es un arbol Adelson-Velskii y Landis, sin embargo, tiene una gran cantidad de cambios para que sea util para este projecto.
+	
+	La primera y más importante es que se usan intervalos en vez de elementos. Para esto se necesita un ``maximo final de subarbol'' en cada nodo, y luego los intervalos estan ordenados de acuerdo a el inicio del intervalo. Entonces, las operaciones del arbol orginal se pueden seguir haciendo, por lo que las caracteristicas de optimización se mantinen.
+	
+	Valga aclarar que los intervalos en los arboles son siempre cerrados, esto simplifica el manejo, y disminuye el consumo de memoria.
+	
+	Luego, para poder implementar correctamente las funciones de impresion y complemento, se necesito agregar una invariante: los intervalos en el arbol deben ser disjuntos. Esto no es dificil de implementar, una explicacion esta disponible en la seccion ``Dificultades: Eleccion del arbol AVL''.
+	
+	El arbol AVL requiere para su rebalanceo que se tenga conocimiento del balanceo actual de cada subarbol. Es decir, se debe saber en cuanto varia la altura de cada subarbol del nodo para todos los nodos del arbol. A pesar de que solo se necesita la variacion, es mucho más simple de pensar e implementar si se guarda la altura de cada subarbol en todos los nodos. Esto fue lo que se hizo.
+	
+	\section*{Formatos aceptados para los alias}
+	
+	Opté por otorgar la mayor flexibilidad posible al crear aliases. La idea es que el usuario no tenga que crear aliases muy largos, ni reemplazar `ñ' por `ni', por lo que se permiten todos los caracteres latinos, si es que el usuario tiene instalado el locale ``ES\char`_es''. Para mayor facilidad de uso tambien se permiten usar caracteres numericos (ver seccion sobre compilacion y uso).
+
+	\section*{Mensajes de error devueltos por el interprete}
+	
+	\subsection*{Errores generales}
+	El interprete posee un mecanismo para devolver un mensaje de error con la letra en la que falló. Por ejemplo, si el usuario escribiera:
+	
+	\verb|a = {d}|
+	
+	\noindent Veria la salida:
+	
+	\verb|Error de parseo: {d}|
+	
+	\noindent Esto quiere decir que el usuario cometio un error en ese punto. En este caso, ingreso una letra donde deberia haber un numero.
+	
+	\subsection*{Errores de alias}
+	
+	Si el usuario ingresara un comando bien escrito, pero que opera sobre un alias que no existe, el interprete avisa acordemente.
+	
+	\noindent Veamos un ejemplo, si a nunca fue definido, y se ingresa el siguiente comando:
+	
+	\verb|imprimir a|
+	
+	\noindent La consola devuelve:
+	
+	\verb|Alias no existe: a|
+	
+	Para comandos con más de un alias, por cada alias faltante, el interprete avisa en una linea nueva.
+	
+	\subsection*{Errores de impresion}
+	
+	Para el comando ``imprimir'' el interprete avisa si faltan operandos. Esto es decir, si el usuario escribe:
+	
+	\verb|imprimir|
+	
+	\noindent La consola imprime:
+	
+	\verb|Error de parseo: impri|  
+	
+	\verb|Uso: imprimir <alias>!|
+	
+	\noindent Indicando el uso correcto, y la posicion del error.
+	
+	\section*{Compilación y uso}
+	
+	\subsection*{Compilación}
+
+	Este paso es muy simple, despues de obtener el codigo fuente, hacer:
+	
+	\verb|make all|
+	
+	\noindent Si el usuario tiene \verb|gcc| (GNU C Compiler) entonces el no deberia haber errores. 
+	
+	El usuario podra tambien querer usar las letras del alfabeto latino, como eñe y letras acentuadas. En muchos casos, el usuario tendrá ya este soporte. Si el interprete (ver "Uso" más abajo) imprime:
+	
+	\verb|Error: no tiene el locale es_ES.utf8 instalado, tildes y otros no van a funcionar|
+	
+	\noindent se debera descargar el locale ``ES\char`_es.utf8'', como hacer esto depende del sistema operativo del usuario, deberá referirse al manual.
+
+	\subsection*{Uso}
+	
+	El uso del programa es muy simple, una vez terminado el paso anterior (make) el usuario podra invocar:
+	
+	\verb|./Interprete|
+	
+	\noindent Luego, el usuario podrá ingresar comandos.
+	
+	\subsubsection*{Comandos disponibles}
+	
+	\noindent Asignacion de conjuntos:
+	
+	\verb|<alias> = {<aliasInterno>: k <= <aliasInterno> <= k1}|
+	
+	\verb|<alias> = {k, k1, k2, ...}|
+	
+	\noindent Union:
+	
+	\verb'<alias> = <alias1> | <alias2>'
+	
+	\noindent Interseccion:
+	
+	\verb|<alias> = <alias1> & <alias2>|
+	
+	\noindent Resta:
+	
+	\verb|<alias> = <alias1> - <alias2>|
+	
+	\noindent Complemento:
+	
+    \verb|<alias> = ~<alias1>|
+    
+    \noindent Impresion:
+    
+	\verb|imprimir <alias>|
+	
+	\noindent Salida:
+	
+	\verb|salir|
+	
+	
+	\section*{Dificultades}
+
+	Nota: Antes de leer esta seccion, puede convenir leer ``Eleccion de estructuras de datos'', más arriba.
+
+	\subsection*{Eleccion del Arbol AVL}
+
+	Para guardar los conjunto elegí la estructura arbol AVL, el problema surgió cuando habia que imprimir. 
+	
+	El arbol puede tener varias veces el mismo "elemento", esto parece ser falso a primera vista, ¿como puede un arbol de busqueda binario tener un elemento más de una vez? La respuesta es que el arbol en este caso contiene conjuntos, estos no pueden estar repetidos, pero esto solo quiere decir que no exite un intervalo con el mismo inicio y mismo final en otra parte del arbol. Pero puede ocurrir que exista en el arbol un conjunto \{2, 3\} y uno \{3, 3\}. Si yo imprimiera ese arbol tendria el 3 repetido.
+	
+	Para resolver este problema decidí agregar una invariante: el arbol debe contener conjuntos disjuntos. Pero es más facil dicho que hecho. Para la implementación, modifiqué el agregado de conjuntos para que nunca agrege un conjunto que no es disjunto con todo el arbol.
+	
+	El algoritmo toma el conjunto A = [1, 3] y genera A' = [1-1, 3+1] extendiendo A en ambos sentidos. Despues chequea interseccion en el arbol, y, por cada B con el que insterseca, A es A union B y elimina B del arbol. El algoritmo se repite hasta que no haya intersecciones,  recalculando A' cada iteración. Luego el conjunto A es agregado al arbol.
+
+	\subsection*{Soporte para eñes}
+	
+	Un problema bastante grande fue implementar los caracteres para la eñe, tildes y dieresís. Si bien el programa puede ser usable sin estos agregados, la intención es que un usuario no familiar con las limitaciones de una entrada basada en \verb|char| pueda usar este programa sin problemas.
+	
+	Existen extensiones de los caracteres ASCII que agregan eñes y demas, pero se elijió la ruta mas extendible y universal, UTF8. Para hacer uso de esta caracteristica, se requirió usar \verb|wchar_t|, y las versiones ``wide'' de las funciones de manejo de caracteres. 
+	
+	El manejo de caracteres con el sistema ``wide'' permite que los caracteres sean, literalmente, más anchos en su representación en bytes. El tamaño exacto esta determinado por el compilador, pero la idea es que puede almacenar correctamente una gama más grande de caracteres.
+	
+	Una vez que la salida se establece como ``wide'', no se puede usar \verb|printf|, se debe usar \verb|wprintf| o equivalente.
+	
+	Las constantes literales en este nuevo formato deben empezar con una `L':
+	
+	\verb|L"a imprimir"|
+	
+	\subsection*{git}
+	
+	Como todo programador sabe, en particular, yo, errores ocurren. Encontrar donde occurrieron suele ser una tarea que ocupa una cantidad importante de tiempo y requiere tener una idea de donde ocurrio, y cuando, el error. 
+	
+	Para simplificar esta tarea uso git, la herramienta permite saber cuando fue agregado cierto codigo, y que otro codigo fue agregado al mismo tiempo. Tambien tiene la funcionalidad de buscar el lugar (en el tiempo) en el que ocurrio un error y que codigo fue modificado en ese momento (git bisect).
+	
+	\subsection*{Tests, ValGrind y GitHub Actions}
+
+	Una cuestion cuando uno programa es saber si el codigo de hecho anda, para esto se puede usar \verb|assert.h|, y la funcion \verb|assert()|. Para este fin se crea una funcion "de testeo", en mi caso, esta en tests.c. Sin embargo, esta funcion se debe, de hecho, ejecutar. Para no tener que ejecutarla manualmente con cada cambio, utilizé el sistema de chequeo autmatizado que provee GitHub Actions. 
+	
+	El sistema en cuestion permite chequear automaticamente commit por commit, y avisa cuando hay un error. Tambien se ejecuto \verb|test_main()| desde valgrind, así cerciorandome de que la funciones de hecho andan, sin perder memoria, u 
+	otros errores menos visibles.
+
+	\section*{Bibliografía}
+	
+	\nocite{*}
+	\printbibliography[heading=none]
+	
+	
+	\section*{Otra información}
+	
+	
+\end{document}
