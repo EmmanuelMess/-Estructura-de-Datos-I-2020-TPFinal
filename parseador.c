@@ -30,6 +30,9 @@ void remover_espacios(wchar_t * entrada) {
   entrada[j] = '\0';
 }
 
+/**
+ * Chequeo simple de si la entrada es un numero o no, lidia bien con negativos
+ */
 static bool es_numero(const wchar_t* entrada) {
   if(iswdigit(*entrada)) return true;
   if(*entrada == '-' && iswdigit(*(entrada+1))) return true;
@@ -114,6 +117,10 @@ static Metadatos chequear_conjunto_expicito(Metadatos metadatos, wchar_t * entra
   return metadatos;
 }
 
+/**
+ * Dada una entrada con una operacion, genera un nuevo metadatos,
+ * contieniendo la informacion de la operacion
+ */
 static Metadatos chequear_operacion(Metadatos metadatos, wchar_t * entrada) {
   if(!iswalnum(*entrada) && *entrada != '~') return METADATOS_ERROR_GENERAL(entrada);
 
