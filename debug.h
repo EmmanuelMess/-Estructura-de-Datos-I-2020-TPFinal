@@ -19,9 +19,16 @@
 /**
  * DEBUG es true sii se esta ejecutando una version de depuracion.
  */
-#define DEBUG true
+#define DEBUG false
+
+/**
+ * Evita que aparezcan warnings por variables sin usar cuando DEBUG es false
+ */
+#define SIN_USAR(x) (void)(x)
 
 void debug_main(int argc, char *argv[]) {
+  SIN_USAR(argc);
+  SIN_USAR(argv);
 #if DEBUG
   if (argc == 2) {
     if(strcmp(argv[1], "-t") == 0)
@@ -32,12 +39,17 @@ void debug_main(int argc, char *argv[]) {
 }
 
 void debug0(ArbolIntervalos *arbol) {
+  SIN_USAR(arbol);
 #if DEBUG
   arbolintervalos_imprimir(arbol);
 #endif
 }
 
 void debug1(wchar_t * alias, Metadatos metadatos, int* enteros) {
+  SIN_USAR(alias);
+  SIN_USAR(metadatos);
+  SIN_USAR(enteros);
+
 #if DEBUG
   wprintf(L"DEBUG INFO\n");
   wprintf(L"Parser: %s ", alias);
@@ -49,6 +61,9 @@ void debug1(wchar_t * alias, Metadatos metadatos, int* enteros) {
 }
 
 void debug2(wchar_t * alias, Rango rango) {
+  SIN_USAR(alias);
+  SIN_USAR(rango);
+
 #if DEBUG
   wprintf(L"DEBUG INFO\n");
   wprintf(L"Parser: %s ", alias);
@@ -58,6 +73,9 @@ void debug2(wchar_t * alias, Rango rango) {
 }
 
 void debug3(wchar_t * alias, Trie * trie) {
+  SIN_USAR(alias);
+  SIN_USAR(trie);
+
 #if DEBUG
   wprintf(L"\n");
 
