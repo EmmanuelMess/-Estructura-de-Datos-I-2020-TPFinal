@@ -104,6 +104,7 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
   ArbolIntervalos * base = arbolintervalos_copiar(arbolA);
 
   //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
+  //Tiene modificaciones para que hijos de los nodos agregados se recorran
   Deque *deque = deque_crear();
   deque_push_front(deque, base->arbolAvlNodo);
 
@@ -123,9 +124,15 @@ ArbolIntervalos * arbolintervalos_resta(ArbolIntervalos * arbolA, ArbolIntervalo
       Rango resultadoB = RANGO_INEXISTENTE;
       rango_resta(rangoBase, interseccion, &resultadoA, &resultadoB);
 
-      if(!inexistente(resultadoA)) arbolintervalos_insertar(base, resultadoA);
-      if(!inexistente(resultadoB)) arbolintervalos_insertar(base, resultadoB);
-    } else arbolintervalos_insertar(base, rangoBase);
+      if(!inexistente(resultadoA)) {
+        ArbolIntervalosNodo * insertado = arbolintervalos_insertar(base, resultadoA);
+        deque_push_front(deque, insertado);
+      }
+      if(!inexistente(resultadoB)){
+        ArbolIntervalosNodo * insertado = arbolintervalos_insertar(base, resultadoB);
+        deque_push_front(deque, insertado);
+      }
+    }
   }
 
   deque_destruir(deque);
@@ -137,9 +144,10 @@ ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
   ArbolIntervalos * base = arbolintervalos_crear();
   arbolintervalos_insertar(base, (Rango){.a = INT_MIN, .b = INT_MAX});
 
-  if (arbol->arbolAvlNodo == NULL) return base;
+  if(arbol->arbolAvlNodo == NULL) return base;
 
   //DFS del arbol base (ver arbol_intervalos.c:recorrer_xfirstsearch)
+  //Tiene modificaciones para que hijos de los nodos agregados se recorran
   Deque *deque = deque_crear();
   deque_push_front(deque, base->arbolAvlNodo);
 
@@ -159,9 +167,15 @@ ArbolIntervalos * arbolintervalos_complemento(ArbolIntervalos *arbol) {
       Rango resultadoB = RANGO_INEXISTENTE;
       rango_resta(rangoBase, interseccion, &resultadoA, &resultadoB);
 
-      if(!inexistente(resultadoA)) arbolintervalos_insertar(base, resultadoA);
-      if(!inexistente(resultadoB)) arbolintervalos_insertar(base, resultadoB);
-    } else arbolintervalos_insertar(base, rangoBase);
+      if(!inexistente(resultadoA)) {
+        ArbolIntervalosNodo * insertado = arbolintervalos_insertar(base, resultadoA);
+        deque_push_front(deque, insertado);
+      }
+      if(!inexistente(resultadoB)){
+        ArbolIntervalosNodo * insertado = arbolintervalos_insertar(base, resultadoB);
+        deque_push_front(deque, insertado);
+      }
+    }
   }
 
   deque_destruir(deque);

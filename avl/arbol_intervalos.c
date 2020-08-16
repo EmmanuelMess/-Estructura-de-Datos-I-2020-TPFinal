@@ -211,9 +211,9 @@ static void rebalancear(
   }
 }
 
-void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
+ArbolIntervalosNodo* arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   if(inexistente(rango))
-    return;
+    return NULL;
 
   Rango rangoExtendido = {
     .a = rango.a > INT_MIN? rango.a - 1 : INT_MIN,
@@ -254,9 +254,10 @@ void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
                    chequear->rango.b < rango.b))
         pos = &((*pos)->derecha);
       else {
+        free(nodo);
         deque_destruir(dequeDireccion);
 
-        return;
+        return NULL;
       }
     }
 
@@ -266,6 +267,8 @@ void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango) {
   rebalancear(dequeDireccion);
 
   deque_destruir(dequeDireccion);
+
+  return nodo;
 }
 
 /**

@@ -76,8 +76,10 @@ void arbolintervalos_destruir(ArbolIntervalos* arbol);
  * Alerta: Edita la entrada.
  * Inserta un nuevo rango en el arbol.
  * Mantiene las invariantes
+ *
+ * Retorna el nodo insertado, no modificar.
  */
-void arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango);
+ArbolIntervalosNodo* arbolintervalos_insertar(ArbolIntervalos *arbol, Rango rango);
 
 /**
  * Alerta: No resta rangos! El rango a eliminar debe coincidir _exactamente_
